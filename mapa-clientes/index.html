@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Mapa interativo do Brasil para visualização de clientes com importação de planilhas CSV/Excel.">
+<meta name="keywords" content="mapa, brasil, clientes, planilha, csv, excel, geocodificação">
+<meta name="author" content="Enebras">
+<meta name="theme-color" content="#0066cc">
+
+<meta property="og:title" content="Enebras - Mapa de Clientes">
+<meta property="og:description" content="Mapa interativo do Brasil para visualização de clientes">
+<meta property="og:type" content="website">
+<meta property="og:image" content="favicon.svg">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="favicon.svg">
+
+<title>Enebras - Mapa de Clientes</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div id="loading-overlay" role="alert" aria-live="polite">
+  <div class="spinner" aria-hidden="true"></div>
+  <p id="loading-text">Carregando...</p>
+</div>
+
+<div id="toast-container" role="status" aria-live="polite"></div>
+
+<div id="app">
+  <aside id="sidebar" role="complementary" aria-label="Painel de controles">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <img src="https://enebras.com.br/logo.png" alt="Enebras" class="logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="logo-fallback" style="display:none;" aria-hidden="true">
+          <span class="logo-icon">❄</span>
+          <span class="logo-text">ENEBRAS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="upload-section">
+      <label for="file-input" class="upload-btn" role="button" tabindex="0" aria-label="Importar planilha CSV ou Excel">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Importar CSV/Excel
+      </label>
+      <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display:none;" aria-label="Selecionar arquivo">
+      <div class="upload-actions">
+        <button id="load-example-btn" class="btn-secondary" aria-label="Carregar dados de exemplo">Exemplo</button>
+        <button id="clear-data-btn" class="btn-danger" aria-label="Limpar todos os dados">Limpar Tudo</button>
+      </div>
+      <small class="help-text">Importacao incremental: so adiciona clientes novos</small>
+    </div>
+
+    <div class="search-section">
+      <label for="search-input" class="sr-only">Buscar cliente</label>
+      <input type="text" id="search-input" placeholder="Buscar cliente..." aria-label="Buscar cliente">
+    </div>
+
+    <div class="filters-section">
+      <label for="state-filter" class="sr-only">Filtrar por estado</label>
+      <select id="state-filter" aria-label="Filtrar por estado"><option value="">Todos os Estados</option></select>
+      <label for="city-filter" class="sr-only">Filtrar por cidade</label>
+      <select id="city-filter" aria-label="Filtrar por cidade"><option value="">Todas as Cidades</option></select>
+    </div>
+
+    <div id="stats-bar" class="stats-bar" role="status" aria-label="Estatísticas">
+      <div class="stat"><span class="stat-value" id="total-clients">0</span><span class="stat-label">Clientes</span></div>
+      <div class="stat"><span class="stat-value" id="total-states">0</span><span class="stat-label">Estados</span></div>
+      <div class="stat"><span class="stat-value" id="total-cities">0</span><span class="stat-label">Cidades</span></div>
+    </div>
+
+    <div id="clients-list" class="clients-list" role="list" aria-label="Lista de clientes"></div>
+  </aside>
+
+  <main id="map-container" role="main">
+    <div id="map" aria-label="Mapa do Brasil"></div>
+  </main>
+</div>
+
+<div id="client-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name">
+  <div class="modal-content">
+    <button class="modal-close" id="modal-close" aria-label="Fechar">&times;</button>
+    <div class="modal-header"><h2 id="modal-name"></h2></div>
+    <div class="modal-body">
+      <div class="modal-field"><label>Endereco</label><span id="modal-address"></span></div>
+      <div class="modal-field"><label>Cidade/Estado</label><span id="modal-city-state"></span></div>
+      <div class="modal-field"><label>CEP</label><span id="modal-cep"></span></div>
+      <div class="modal-field"><label>Telefone</label><span id="modal-phone"></span></div>
+      <div class="modal-field"><label>Email</label><span id="modal-email"></span></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="db.js"></script>
+<script src="app.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
