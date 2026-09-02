@@ -1,0 +1,11 @@
+{
+  "name": "enebras-mapa-clientes",
+  "version": "1.0.0",
+  "description": "Mapa interativo do Brasil para visualização de clientes",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "node build.js"
+  },
+  "keywords": ["mapa", "brasil", "clientes", "leaflet"],
+  "license": "MIT"
+}
