@@ -6,7 +6,7 @@
 <meta name="description" content="Mapa interativo do Brasil para visualização de clientes com importação de planilhas CSV/Excel.">
 <meta name="keywords" content="mapa, brasil, clientes, planilha, csv, excel, geocodificação">
 <meta name="author" content="Enebras">
-<meta name="theme-color" content="#0066cc">
+<meta name="theme-color" content="#0a0f1a">
 
 <meta property="og:title" content="Enebras - Mapa de Clientes">
 <meta property="og:description" content="Mapa interativo do Brasil para visualização de clientes">
@@ -19,85 +19,495 @@
 
 <title>Enebras - Mapa de Clientes</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" integrity="sha384-wgw+aLYNQ7dlhK47ZPK7FRACiq7ROZwgFNg0m04avm4CaXS+Z9Y7nMu8yNjBKYC+" crossorigin="anonymous" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js" integrity="sha384-7hwyYzxURfZMLwHgvEKrYEmM5tX+1DVWK5iDR4R69bOQeY90Q8B8n9Cobuyqybhw" crossorigin="anonymous"></script>
 </head>
 <body>
+
+<!-- Loading Screen -->
 <div id="loading-overlay" role="alert" aria-live="polite">
-  <div class="spinner" aria-hidden="true"></div>
-  <p id="loading-text">Carregando...</p>
+  <div class="loading-content">
+    <div class="loading-logo">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+    </div>
+    <div class="loading-spinner"></div>
+    <p id="loading-text">Carregando mapa...</p>
+  </div>
 </div>
 
+<!-- Toast Container -->
 <div id="toast-container" role="status" aria-live="polite"></div>
 
+<!-- Main App -->
 <div id="app">
-  <aside id="sidebar" role="complementary" aria-label="Painel de controles">
+  
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    
+    <!-- Sidebar Header -->
     <div class="sidebar-header">
-      <div class="logo-container">
-        <img src="https://enebras.com.br/logo.png" alt="Enebras" class="logo-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-        <div class="logo-fallback" style="display:none;" aria-hidden="true">
-          <span class="logo-icon">❄</span>
-          <span class="logo-text">ENEBRAS</span>
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-brand">ENEBRAS</span>
+          <span class="logo-sub">Mapa de Clientes</span>
+        </div>
+      </div>
+      <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Fechar painel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value" id="total-clients">0</span>
+          <span class="stat-label">Clientes</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value" id="total-states">0</span>
+          <span class="stat-label">Estados</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value" id="total-cities">0</span>
+          <span class="stat-label">Cidades</span>
         </div>
       </div>
     </div>
 
-    <div class="upload-section">
-      <label for="file-input" class="upload-btn" role="button" tabindex="0" aria-label="Importar planilha CSV ou Excel">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <!-- Actions -->
+    <div class="actions-section">
+      <label for="file-input" class="action-btn primary" role="button" tabindex="0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
         Importar CSV/Excel
       </label>
-      <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display:none;" aria-label="Selecionar arquivo">
-      <div class="upload-actions">
-        <button id="load-example-btn" class="btn-secondary" aria-label="Carregar dados de exemplo">Exemplo</button>
-        <button id="clear-data-btn" class="btn-danger" aria-label="Limpar todos os dados">Limpar Tudo</button>
+      <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display:none;">
+      
+      <div class="action-row">
+        <button id="load-example-btn" class="action-btn secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          Exemplo
+        </button>
+        <button id="export-btn" class="action-btn secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Exportar
+        </button>
+        <button id="clear-data-btn" class="action-btn danger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
       </div>
-      <small class="help-text">Importacao incremental: so adiciona clientes novos</small>
+      <div class="action-row">
+        <button id="backup-btn" class="action-btn secondary" title="Baixar backup JSON">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Backup
+        </button>
+        <button id="restore-btn" class="action-btn secondary" title="Restaurar backup JSON">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Restaurar
+        </button>
+      </div>
+      <button id="route-day-btn" class="action-btn route-day" title="Roteiro com os clientes filtrados">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="6" cy="19" r="2"/>
+          <circle cx="18" cy="5" r="2"/>
+          <path d="M8 19h7a4 4 0 0 0 0-8H9a4 4 0 0 1 0-8h1"/>
+        </svg>
+        Roteiro do dia
+      </button>
+      <button id="report-btn" class="action-btn secondary" title="Relatório da carteira">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        Relatório
+      </button>
+      <input type="file" id="restore-input" accept=".json,application/json" style="display:none;">
     </div>
 
+    <!-- Search -->
     <div class="search-section">
-      <label for="search-input" class="sr-only">Buscar cliente</label>
-      <input type="text" id="search-input" placeholder="Buscar cliente..." aria-label="Buscar cliente">
+      <div class="search-input-wrapper">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar cliente...">
+        <button id="clear-search" class="clear-search-btn" style="display:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
+    <!-- Filters -->
     <div class="filters-section">
-      <label for="state-filter" class="sr-only">Filtrar por estado</label>
-      <select id="state-filter" aria-label="Filtrar por estado"><option value="">Todos os Estados</option></select>
-      <label for="city-filter" class="sr-only">Filtrar por cidade</label>
-      <select id="city-filter" aria-label="Filtrar por cidade"><option value="">Todas as Cidades</option></select>
+      <select id="state-filter" class="filter-select">
+        <option value="">Estados</option>
+      </select>
+      <select id="city-filter" class="filter-select">
+        <option value="">Cidades</option>
+      </select>
+      <select id="status-filter" class="filter-select">
+        <option value="">Status</option>
+        <option value="active">Ativo</option>
+        <option value="pmoc">PMOC vigente</option>
+        <option value="pending">Pendente</option>
+      </select>
+      <select id="visit-filter" class="filter-select">
+        <option value="">Visitas</option>
+        <option value="none">Sem visita</option>
+        <option value="30">Há +30 dias</option>
+        <option value="60">Há +60 dias</option>
+        <option value="90">Há +90 dias</option>
+      </select>
     </div>
 
-    <div id="stats-bar" class="stats-bar" role="status" aria-label="Estatísticas">
-      <div class="stat"><span class="stat-value" id="total-clients">0</span><span class="stat-label">Clientes</span></div>
-      <div class="stat"><span class="stat-value" id="total-states">0</span><span class="stat-label">Estados</span></div>
-      <div class="stat"><span class="stat-value" id="total-cities">0</span><span class="stat-label">Cidades</span></div>
-    </div>
+    <!-- Clients List -->
+    <div id="clients-list" class="clients-list"></div>
 
-    <div id="clients-list" class="clients-list" role="list" aria-label="Lista de clientes"></div>
   </aside>
 
-  <main id="map-container" role="main">
-    <div id="map" aria-label="Mapa do Brasil"></div>
+  <!-- Sidebar Toggle (when closed) -->
+  <button id="sidebar-open" class="sidebar-open-btn">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 18l6-6-6-6"/>
+    </svg>
+  </button>
+
+  <!-- Map Container -->
+  <main id="map-container" class="map-container">
+    <div id="map"></div>
+    
+    <!-- Map Controls -->
+    <div class="map-controls">
+      <button id="toggle-clusters" class="map-btn active" title="Agrupar marcadores">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="6"/>
+          <circle cx="12" cy="12" r="2"/>
+        </svg>
+      </button>
+      <button id="toggle-heatmap" class="map-btn" title="Mapa de calor">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+      <button id="toggle-theme" class="map-btn" title="Alternar tema claro/escuro">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+        </svg>
+      </button>
+    </div>
   </main>
+
 </div>
 
-<div id="client-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name">
-  <div class="modal-content">
-    <button class="modal-close" id="modal-close" aria-label="Fechar">&times;</button>
-    <div class="modal-header"><h2 id="modal-name"></h2></div>
+<!-- Client Modal -->
+<div id="client-modal" class="modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 id="modal-name"></h2>
+      <button class="modal-close" id="modal-close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
     <div class="modal-body">
-      <div class="modal-field"><label>Endereco</label><span id="modal-address"></span></div>
-      <div class="modal-field"><label>Cidade/Estado</label><span id="modal-city-state"></span></div>
-      <div class="modal-field"><label>CEP</label><span id="modal-cep"></span></div>
-      <div class="modal-field"><label>Telefone</label><span id="modal-phone"></span></div>
-      <div class="modal-field"><label>Email</label><span id="modal-email"></span></div>
+      <div class="modal-field">
+        <label>Endereço</label>
+        <span id="modal-address"></span>
+      </div>
+      <div class="modal-field">
+        <label>Cidade/Estado</label>
+        <span id="modal-city-state"></span>
+      </div>
+      <div class="modal-field">
+        <label>CEP</label>
+        <span id="modal-cep"></span>
+      </div>
+      <div class="modal-field">
+        <label>Telefone</label>
+        <span id="modal-phone"></span>
+      </div>
+      <div class="modal-field">
+        <label>Email</label>
+        <span id="modal-email"></span>
+      </div>
+      <div class="modal-field">
+        <label>Status</label>
+        <span id="modal-status"></span>
+      </div>
+      <div class="modal-field">
+        <label>Última visita</label>
+        <span id="modal-last-visit"></span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="modal-route" class="modal-btn route">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Como Chegar
+      </button>
+      <button id="modal-edit" class="modal-btn edit">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Editar
+      </button>
+      <button id="modal-delete" class="modal-btn delete">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        Excluir
+      </button>
+      <button id="modal-copy-os" class="modal-btn copy">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Copiar OS
+      </button>
     </div>
   </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Edit Modal -->
+<div id="edit-modal" class="modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2 id="edit-modal-title">Editar Cliente</h2>
+      <button class="modal-close" id="edit-modal-close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="edit-name">Nome *</label>
+        <input type="text" id="edit-name" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label for="edit-address">Endereço</label>
+        <input type="text" id="edit-address" class="form-input">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="edit-city">Cidade</label>
+          <input type="text" id="edit-city" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="edit-state">Estado</label>
+          <input type="text" id="edit-state" class="form-input" maxlength="2" placeholder="UF">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="edit-cep">CEP</label>
+          <input type="text" id="edit-cep" class="form-input" placeholder="00000-000">
+        </div>
+        <div class="form-group">
+          <label for="edit-phone">Telefone</label>
+          <input type="text" id="edit-phone" class="form-input" placeholder="(00) 0000-0000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="edit-email">Email</label>
+        <input type="email" id="edit-email" class="form-input">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="edit-visit-status">Status</label>
+          <select id="edit-visit-status" class="form-input">
+            <option value="">Não definido</option>
+            <option value="active">Ativo</option>
+            <option value="pmoc">PMOC vigente</option>
+            <option value="pending">Pendente</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-last-visit">Última visita</label>
+          <input type="date" id="edit-last-visit" class="form-input">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="edit-save" class="modal-btn save">Salvar</button>
+      <button id="edit-cancel" class="modal-btn cancel">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Route Panel -->
+<div id="route-panel" class="route-panel">
+  <div class="route-header">
+    <div class="route-info">
+      <h3 id="route-client-name"></h3>
+      <span id="route-address" class="route-address"></span>
+    </div>
+    <button class="route-close" id="route-panel-close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+  <div class="route-stats">
+    <div class="route-stat">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span id="route-duration"></span>
+    </div>
+    <div class="route-stat">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      <span id="route-distance"></span>
+    </div>
+  </div>
+  <div id="route-stops" class="route-stops"></div>
+  <div class="route-actions">
+    <button id="route-open-maps" class="route-btn primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" y1="14" x2="21" y2="3"/>
+      </svg>
+      Google Maps
+    </button>
+    <button id="route-copy-link" class="route-btn secondary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      Copiar Link
+    </button>
+    <button id="route-print" class="route-btn secondary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 9V2h12v7"/>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      Imprimir
+    </button>
+  </div>
+</div>
+
+<!-- Report Modal -->
+<div id="report-modal" class="modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>Relatório da carteira</h2>
+      <button class="modal-close" id="report-close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="report-body"></div>
+    <div class="modal-footer">
+      <button id="report-copy" class="modal-btn edit">Copiar resumo</button>
+      <button id="report-print" class="modal-btn save">Imprimir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Print Area -->
+<div id="print-area"></div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" integrity="sha384-mFKkGiGvT5vo1fEyGCD3hshDdKmW3wzXW/x+fWriYJArD0R3gawT6lMvLboM22c0" crossorigin="anonymous"></script>
 <script src="db.js"></script>
+<script src="routes.js"></script>
 <script src="app.js"></script>
 
 <script>

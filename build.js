@@ -7,7 +7,15 @@ if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir);
 }
 
-const filesToCopy = ['index.html', 'manifest.json', 'favicon.svg', 'sw.js'];
+const filesToCopy = [
+  'index.html',
+  'manifest.json',
+  'favicon.svg',
+  'sw.js',
+  'routes.js',
+  'exemplo-clientes.csv',
+  'brasil-estados.geojson'
+];
 
 filesToCopy.forEach(file => {
   const src = path.join(__dirname, file);
@@ -15,26 +23,21 @@ filesToCopy.forEach(file => {
   if (fs.existsSync(src)) {
     fs.copyFileSync(src, dest);
     console.log(`Copied: ${file}`);
+  } else {
+    console.log(`Missing (skipped): ${file}`);
   }
 });
 
-function minifyJS(code) {
+// Minificação conservadora: remove SÓ comentários de bloco e linhas
+// inteiras de comentário. Nunca toca no meio da linha — regex agressiva
+// quebra URLs (https://) e conteúdo dentro de strings/template literals.
+function stripComments(code) {
   return code
     .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/\/\/.*$/gm, '')
-    .replace(/\s+/g, ' ')
-    .replace(/\s*([{}:;,=+\-*/<>!&|?])\s*/g, '$1')
-    .replace(/;}/g, '}')
-    .trim();
-}
-
-function minifyCSS(code) {
-  return code
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/\s*([{}:;,>+~])\s*/g, '$1')
-    .replace(/;}/g, '}')
-    .trim();
+    .split('\n')
+    .filter(line => !/^\s*\/\//.test(line))
+    .join('\n')
+    .trim() + '\n';
 }
 
 const jsFiles = ['db.js', 'app.js'];
@@ -43,11 +46,12 @@ jsFiles.forEach(file => {
   const dest = path.join(distDir, file);
   if (fs.existsSync(src)) {
     const code = fs.readFileSync(src, 'utf8');
-    fs.writeFileSync(dest, minifyJS(code));
+    const stripped = stripComments(code);
+    fs.writeFileSync(dest, stripped);
     const original = Buffer.byteLength(code);
-    const minified = Buffer.byteLength(minifyJS(code));
-    const savings = ((1 - minified / original) * 100).toFixed(1);
-    console.log(`Minified: ${file} (${savings}% smaller)`);
+    const result = Buffer.byteLength(stripped);
+    const savings = ((1 - result / original) * 100).toFixed(1);
+    console.log(`Stripped: ${file} (${savings}% smaller)`);
   }
 });
 
@@ -57,11 +61,12 @@ cssFiles.forEach(file => {
   const dest = path.join(distDir, file);
   if (fs.existsSync(src)) {
     const code = fs.readFileSync(src, 'utf8');
-    fs.writeFileSync(dest, minifyCSS(code));
+    const stripped = code.replace(/\/\*[\s\S]*?\*\//g, '').trim() + '\n';
+    fs.writeFileSync(dest, stripped);
     const original = Buffer.byteLength(code);
-    const minified = Buffer.byteLength(minifyCSS(code));
-    const savings = ((1 - minified / original) * 100).toFixed(1);
-    console.log(`Minified: ${file} (${savings}% smaller)`);
+    const result = Buffer.byteLength(stripped);
+    const savings = ((1 - result / original) * 100).toFixed(1);
+    console.log(`Stripped: ${file} (${savings}% smaller)`);
   }
 });
 

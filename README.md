@@ -1,90 +1,74 @@
-# Enebras - Mapa de Clientes
+# Enebras - Mapa de Clientes PRO
 
-Mapa interativo do Brasil para visualização de clientes com importação de planilhas CSV/Excel.
+Mapa interativo do Brasil com design profissional.
 
-## Funcionalidades
+## Design Features
 
-- Mapa interativo com ruas, avenidas e regiões (OpenStreetMap)
-- Contorno e nome de todos os 27 estados brasileiros
-- Importação de planilhas CSV e Excel (.xlsx, .xls)
-- Importação incremental (só adiciona clientes novos)
-- Geocodificação automática de endereços
-- Persistência de dados local (IndexedDB)
-- Busca e filtros por estado/cidade
-- Marcadores de clientes com popup de detalhes
-- Responsivo (desktop e mobile)
-- Funciona offline (PWA)
+- Glassmorphism (blur + transparency)
+- Modern color palette (Indigo + Cyan)
+- Smooth animations
+- Professional typography (Inter)
+- Micro-interactions
+- Dark theme
 
-## Como usar
+## Features
 
-1. Abra `index.html` no navegador
-2. Clique em "Importar CSV/Excel" para carregar sua planilha
-3. Ou clique em "Exemplo" para carregar dados de demonstração
+- Interactive map with OpenStreetMap
+- Import CSV/Excel
+- Export data
+- Search with debounce
+- Filter by state/city
+- Route calculation (OSRM)
+- Marker clustering
+- Heatmap
+- Edit/Delete clients
+- Client status (Ativo / PMOC vigente / Pendente) with pin colors
+- Last visit tracking + filters
+- Multi-stop day route (nearest-neighbor + OSRM)
+- Copy service order (Auvo bridge)
+- Backup/Restore (JSON)
+- Report + print itinerary
+- Light/Dark theme
+- PWA support
 
-### Formato da planilha
+## Technologies
 
-A planilha deve ter pelo menos a coluna `nome`. Colunas opcionais:
+- Leaflet + MarkerCluster + Heat
+- IndexedDB
+- OSRM (routing)
+- Nominatim (geocoding)
 
-| Coluna | Variações aceitas |
-|--------|------------------|
-| Nome | nome, name, cliente, empresa, razao_social |
-| Endereço | endereco, address, rua, logradouro |
-| Cidade | cidade, city, municipio |
-| Estado | estado, state, uf |
-| CEP | cep, postal, zip |
-| Telefone | telefone, phone, tel, celular |
-| Email | email, e-mail |
-| Latitude | lat, latitude |
-| Longitude | lng, lon, longitude |
-
-Se não tiver latitude/longitude, o sistema geocodifica automaticamente pelo cidade+estado.
-
-## Hospedagem
-
-O projeto é 100% frontend. Pode ser hospedado em:
-
-- **GitHub Pages** - Gratuito, simples
-- **Netlify** - Gratuito, deploy automático
-- **Vercel** - Gratuito, rápido
-- **Firebase Hosting** - Gratuito, Google
-
-### Deploy no GitHub Pages
-
-1. Crie um repositório no GitHub
-2. Suba os arquivos
-3. Vá em Settings > Pages
-4. Selecione a branch `main`
-5. Acesse `https://seu-usuario.github.io/nome-do-repositorio`
-
-### Deploy no Netlify
-
-1. Acesse [netlify.com](https://netlify.com)
-2. Arraste a pasta do projeto
-3. Pronto! Ganha uma URL automática
-
-## Estrutura do projeto
-
-```
-mapa-clientes/
-├── index.html          # Página principal
-├── style.css           # Estilos
-├── app.js              # Lógica principal
-├── db.js               # Banco de dados local (IndexedDB)
-├── manifest.json       # Configuração PWA
-├── sw.js               # Service Worker (offline)
-├── favicon.svg         # Ícone do site
-├── .gitignore          # Arquivos ignorados pelo Git
-└── README.md           # Este arquivo
-```
-
-## Tecnologias
-
-- **Leaflet** - Mapas interativos
-- **OpenStreetMap** - Tiles do mapa
-- **SheetJS** - Leitura de planilhas Excel
-- **IndexedDB** - Armazenamento local
-- **Nominatim** - Geocodificação
-
-## Licença
+## License
 
 MIT
+
+## Changelog
+
+### v6.1
+- Sidebar 340px + overlay automático até 1100px
+- Modo compacto p/ telas baixas (1366x768): painel rola, busca fixa no topo
+- Filtros com rótulos curtos (sem corte)
+
+### v6
+- Status de visita por cliente (pins coloridos, badges, filtro)
+- Última visita (campo, filtro +30/60/90 dias, exibição "há X dias")
+- Busca tolerante a acentos ("Sao Paulo" acha "São Paulo")
+- Roteiro do dia multi-paradas (vizinho mais próximo + OSRM, até 12)
+- Botão Copiar OS (ponte para o Auvo)
+- Backup JSON em 1 clique + restauração com upsert
+- Relatório da carteira (KPIs, status, estados, top cidades) + copiar/imprimir
+- Tema claro + impressão de roteiro/relatório
+- Segurança: SRI nos CDNs, anti CSV-injection, escape no avatar
+
+### v5
+- Filtros (busca/estado/cidade) agora filtram os marcadores do mapa
+- Toggle de clusters mostra pins individuais em vez de esvaziar o mapa
+- Botão de heatmap funcionando (segue os filtros ativos)
+- Geocodificação por endereço completo, com fallback para cidade/UF
+- Chave anti-duplicada inclui endereço (migração automática da base antiga)
+- Export CSV com BOM (acentos corretos no Excel)
+- Modal usa ID do cliente (editar/excluir sempre no registro certo)
+- GeoJSON dos estados local (`brasil-estados.geojson`), remoto como fallback
+- Service worker com cache real (app funciona offline)
+- Build corrigido: inclui `routes.js`, minificação segura
+- `favicon.svg` adicionado
