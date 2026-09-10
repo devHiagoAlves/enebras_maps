@@ -1700,6 +1700,8 @@ body.light .map-btn.active {
 @media (max-width: 768px) {
   #app {
     flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
   }
 
   #mobile-topbar {
@@ -1742,7 +1744,8 @@ body.light .map-btn.active {
     max-width: 100%;
   }
 
-  .sidebar-open-btn {
+  /* Sidebar segue acessível no mapa; escondida na tela de visitas */
+  body.in-visits .sidebar-open-btn {
     display: none !important;
   }
 
@@ -1757,6 +1760,7 @@ body.light .map-btn.active {
   }
 
   #map-container.full #map {
+    height: 100vh;
     height: 100dvh;
   }
 
@@ -1885,6 +1889,7 @@ body.light .map-btn.active {
     bottom: 0;
     z-index: 1200;
     border-radius: 18px 18px 0 0;
+    max-height: 45vh;
     max-height: 45dvh;
     transform: translateY(calc(100% - 56px));
     transition: transform 0.25s ease;
@@ -1914,6 +1919,7 @@ body.light .map-btn.active {
 
   .sheet-list {
     overflow-y: auto;
+    max-height: calc(45vh - 56px);
     max-height: calc(45dvh - 56px);
     padding: 0 14px 16px;
     display: flex;
@@ -1927,6 +1933,7 @@ body.light .map-btn.active {
     max-width: 100%;
     margin: 0;
     border-radius: 20px 20px 0 0;
+    max-height: 92vh;
     max-height: 92dvh;
     overflow-y: auto;
   }

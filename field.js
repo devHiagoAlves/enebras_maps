@@ -78,6 +78,7 @@ function renderFieldList() {
 
 function setFieldView(view) {
   fieldView = view;
+  document.body.classList.toggle('in-visits', view === 'visits');
   document.getElementById('visits-view').classList.toggle('active', view === 'visits');
   document.getElementById('map-container').classList.toggle('full', view === 'map');
   document.getElementById('view-visits-btn').classList.toggle('active', view === 'visits');
