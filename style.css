@@ -1712,12 +1712,14 @@ body.light .map-btn.active {
     padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
     flex-shrink: 0;
     z-index: 1600;
+    background: var(--bg-primary, #0a0f1a);
   }
 
   .topbar-brand {
     font-weight: 800;
     font-size: 15px;
     letter-spacing: 1px;
+    color: var(--text-primary, #f1f5f9);
   }
 
   .view-switch {
@@ -1725,17 +1727,24 @@ body.light .map-btn.active {
     gap: 4px;
     padding: 4px;
     border-radius: 12px;
+    background: var(--bg-tertiary, #1a2742);
   }
 
   .view-switch button {
     border: none;
     background: transparent;
+    color: var(--text-secondary, #94a3b8);
     padding: 10px 18px;
     border-radius: 9px;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
     min-height: 44px;
+  }
+
+  .view-switch button.active {
+    background: #10b981;
+    color: #fff;
   }
 
   /* Sidebar vira painel de apoio no mobile (desktop intacto) */
@@ -1775,6 +1784,7 @@ body.light .map-btn.active {
     position: fixed;
     inset: 0;
     z-index: 1500;
+    background: var(--bg-primary, #0a0f1a);
     padding: calc(64px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
     overflow-y: auto;
   }
@@ -1794,6 +1804,7 @@ body.light .map-btn.active {
     margin: 2px 2px 10px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    color: var(--text-secondary, #94a3b8);
   }
 
   .field-list {
@@ -1811,6 +1822,8 @@ body.light .map-btn.active {
     padding: 14px;
     cursor: pointer;
     min-height: 76px;
+    background: var(--bg-secondary, #111d33);
+    border: 1px solid var(--border, rgba(148, 163, 184, 0.15));
   }
 
   .field-main {
@@ -1824,6 +1837,7 @@ body.light .map-btn.active {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--text-primary, #f1f5f9);
   }
 
   .field-addr {
@@ -1832,6 +1846,7 @@ body.light .map-btn.active {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--text-secondary, #94a3b8);
   }
 
   .field-meta {
@@ -1846,10 +1861,26 @@ body.light .map-btn.active {
     border-radius: 999px;
   }
 
+  .field-badge.b-none {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+  }
+
+  .field-badge.b-open {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+  }
+
+  .field-badge.b-done {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+  }
+
   .field-go {
     font-size: 28px;
     font-weight: 300;
     line-height: 1;
+    color: var(--text-secondary, #94a3b8);
   }
 
   .field-empty {
@@ -1857,6 +1888,7 @@ body.light .map-btn.active {
     padding: 40px 20px;
     font-size: 15px;
     line-height: 1.6;
+    color: var(--text-secondary, #94a3b8);
   }
 
   /* GPS FAB */
@@ -1866,13 +1898,16 @@ body.light .map-btn.active {
     justify-content: center;
     position: absolute;
     right: 14px;
-    bottom: calc(90px + env(safe-area-inset-bottom));
+    bottom: calc(170px + env(safe-area-inset-bottom));
     width: 52px;
     height: 52px;
     border-radius: 50%;
     font-size: 24px;
     z-index: 1200;
     cursor: pointer;
+    background: var(--bg-glass, rgba(17, 29, 51, 0.9));
+    color: var(--text-primary, #f1f5f9);
+    border: 1px solid var(--border, rgba(148, 163, 184, 0.2));
   }
 
   #gps-btn.active {
@@ -1889,6 +1924,8 @@ body.light .map-btn.active {
     bottom: 0;
     z-index: 1200;
     border-radius: 18px 18px 0 0;
+    background: var(--bg-primary, #0a0f1a);
+    border-top: 1px solid var(--border, rgba(148, 163, 184, 0.15));
     max-height: 45vh;
     max-height: 45dvh;
     transform: translateY(calc(100% - 56px));
@@ -1909,12 +1946,14 @@ body.light .map-btn.active {
     cursor: pointer;
     font-size: 13px;
     font-weight: 700;
+    color: var(--text-secondary, #94a3b8);
   }
 
   .sheet-handle .grab {
     width: 44px;
     height: 5px;
     border-radius: 999px;
+    background: var(--text-secondary, #475569);
   }
 
   .sheet-list {
@@ -1925,6 +1964,15 @@ body.light .map-btn.active {
     display: flex;
     flex-direction: column;
     gap: 10px;
+  }
+
+  #map-container.full .map-controls {
+    top: calc(72px + env(safe-area-inset-top));
+  }
+
+  .sidebar-open-btn {
+    top: calc(72px + env(safe-area-inset-top));
+    left: 12px;
   }
 
   /* Visit modal em sheet */
