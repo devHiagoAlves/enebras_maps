@@ -1488,8 +1488,17 @@ async function buildDayRoute() {
     showToast('Roteiro calculado!', 'success');
   } catch (error) {
     hideLoading();
-    showToast('Erro no roteiro: ' + error.message, 'error');
+    showToast('Erro no roteiro: ' + geoErrorMessage(error), 'error');
   }
+}
+
+// GPS pode falhar com mensagem vazia: traduz o código em texto útil
+function geoErrorMessage(err) {
+  if (err && err.code === 1) return 'permissão de localização negada — libere o GPS p/ o site';
+  if (err && err.code === 2) return 'sem sinal de GPS — tente ao ar livre';
+  if (err && err.code === 3) return 'GPS demorou demais — tente de novo';
+  if (err && err.message) return err.message;
+  return 'localização indisponível';
 }
 
 function showDayRoutePanel(ordered, route) {

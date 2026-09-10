@@ -1751,6 +1751,21 @@ body.light .map-btn.active {
   .sidebar {
     width: 100%;
     max-width: 100%;
+    /* Abaixo da topbar: o botão fechar não fica coberto */
+    top: calc(72px + env(safe-area-inset-top));
+  }
+
+  /* Touch: sem delay de double-tap nem highlight cinza */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  .field-card,
+  .client-card,
+  .sheet-handle {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Sidebar segue acessível no mapa; escondida na tela de visitas */

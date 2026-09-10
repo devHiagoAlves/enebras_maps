@@ -1,1 +1,4 @@
 dist/
+scoped_dir*/
+chromium_*/
+*.tmp
