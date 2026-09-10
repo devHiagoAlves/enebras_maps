@@ -11,6 +11,8 @@ const filesToCopy = [
   'index.html',
   'manifest.json',
   'favicon.svg',
+  'icon-192.png',
+  'icon-512.png',
   'sw.js',
   'routes.js',
   'exemplo-clientes.csv',
@@ -40,7 +42,7 @@ function stripComments(code) {
     .trim() + '\n';
 }
 
-const jsFiles = ['db.js', 'app.js'];
+const jsFiles = ['db.js', 'field.js', 'app.js'];
 jsFiles.forEach(file => {
   const src = path.join(__dirname, file);
   const dest = path.join(distDir, file);

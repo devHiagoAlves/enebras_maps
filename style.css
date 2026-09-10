@@ -507,6 +507,43 @@ body {
   min-width: 0;
 }
 
+.client-select {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: #10b981;
+  cursor: pointer;
+}
+
+.selection-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 16px 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.selection-bar.hidden {
+  display: none;
+}
+
+.selection-bar button {
+  border-radius: 8px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.client-marker.selected {
+  outline: 3px solid #10b981;
+  outline-offset: 2px;
+}
+
 /* === Status: pins + badges === */
 .client-marker.status-active {
   background: #10b981;
@@ -1647,6 +1684,317 @@ body.light .state-label {
 
 body.light .map-btn.active {
   color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODO CAMPO (mobile-first p/ equipe em visita)
+   ═══════════════════════════════════════════════════════════════ */
+
+#mobile-topbar,
+#visits-view,
+#gps-btn,
+#sheet {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  #app {
+    flex-direction: column;
+  }
+
+  #mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+    flex-shrink: 0;
+    z-index: 1600;
+  }
+
+  .topbar-brand {
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  .view-switch {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 12px;
+  }
+
+  .view-switch button {
+    border: none;
+    background: transparent;
+    padding: 10px 18px;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 44px;
+  }
+
+  /* Sidebar vira painel de apoio no mobile (desktop intacto) */
+  .sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .sidebar-open-btn {
+    display: none !important;
+  }
+
+  #map-container {
+    position: relative;
+  }
+
+  #map-container.full {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+  }
+
+  #map-container.full #map {
+    height: 100dvh;
+  }
+
+  /* Visits view */
+  #visits-view {
+    display: none;
+  }
+
+  #visits-view.active {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    padding: calc(64px + env(safe-area-inset-top)) 14px calc(14px + env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+
+  .field-search-wrap {
+    margin-bottom: 10px;
+  }
+
+  .field-search-wrap .search-input {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .field-today-count {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 2px 2px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .field-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 20px;
+  }
+
+  .field-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    min-height: 76px;
+  }
+
+  .field-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .field-name {
+    font-weight: 700;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .field-addr {
+    font-size: 13px;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .field-meta {
+    margin-top: 6px;
+  }
+
+  .field-badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .field-go {
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  .field-empty {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* GPS FAB */
+  #gps-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 14px;
+    bottom: calc(90px + env(safe-area-inset-bottom));
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    font-size: 24px;
+    z-index: 1200;
+    cursor: pointer;
+  }
+
+  #gps-btn.active {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  /* Bottom sheet */
+  #sheet {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1200;
+    border-radius: 18px 18px 0 0;
+    max-height: 45dvh;
+    transform: translateY(calc(100% - 56px));
+    transition: transform 0.25s ease;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  #sheet.open {
+    transform: translateY(0);
+  }
+
+  .sheet-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 56px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .sheet-handle .grab {
+    width: 44px;
+    height: 5px;
+    border-radius: 999px;
+  }
+
+  .sheet-list {
+    overflow-y: auto;
+    max-height: calc(45dvh - 56px);
+    padding: 0 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Visit modal em sheet */
+  .visit-sheet {
+    align-self: flex-end;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 20px 20px 0 0;
+    max-height: 92dvh;
+    overflow-y: auto;
+  }
+
+  .visit-address {
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .visit-times {
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 4px;
+    color: #10b981;
+  }
+
+  .visit-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .visit-actions .modal-btn {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+
+  .photo-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    text-align: center;
+  }
+
+  .photos-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .photo-thumb {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .photos-hint {
+    font-size: 13px;
+  }
+
+  #visit-note {
+    font-size: 16px;
+  }
+
+  /* Checkbox de seleção maior no touch */
+  .client-select {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════

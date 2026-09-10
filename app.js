@@ -10,6 +10,74 @@ let heatLayer = null;
 let showHeat = false;
 let markerById = new Map();
 let lastDayRoute = null;
+let selectedIds = new Set();
+
+// === Seleção p/ roteiro ===
+function saveSelection() {
+  try {
+    localStorage.setItem('enebras-route-selection', JSON.stringify([...selectedIds]));
+  } catch (e) {}
+}
+
+function loadSelection() {
+  try {
+    const arr = JSON.parse(localStorage.getItem('enebras-route-selection') || '[]');
+    if (Array.isArray(arr)) selectedIds = new Set(arr.filter(n => typeof n === 'number'));
+  } catch (e) {}
+}
+
+function markerClassFor(client) {
+  return 'client-marker'
+    + (client.visitStatus ? ' status-' + client.visitStatus : '')
+    + (selectedIds.has(client.id) ? ' selected' : '');
+}
+
+// Pins maiores em tela touch (dedo acerta sem zoom)
+function markerPinSize() {
+  try {
+    return (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) ? 22 : 12;
+  } catch (e) {
+    return 12;
+  }
+}
+
+function markerIconFor(client) {
+  const s = markerPinSize();
+  return L.divIcon({
+    className: markerClassFor(client),
+    iconSize: [s, s],
+    iconAnchor: [s / 2, s / 2]
+  });
+}
+
+function toggleSelect(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  saveSelection();
+  updateSelectionBar();
+  const marker = markerById.get(id);
+  const client = clients.find(c => c.id === id);
+  if (marker && client) {
+    marker.setIcon(markerIconFor(client));
+  }
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  saveSelection();
+  updateSelectionBar();
+  renderClients();
+  renderMarkers();
+}
+
+function updateSelectionBar() {
+  const bar = document.getElementById('selection-bar');
+  if (!bar) return;
+  const n = selectedIds.size;
+  bar.classList.toggle('hidden', n === 0);
+  const label = document.getElementById('selection-count');
+  if (label) label.textContent = n === 1 ? '1 selecionado' : `${n} selecionados`;
+}
 let clients = [];
 let filteredClients = [];
 let stateClientCounts = {};
@@ -75,14 +143,17 @@ async function init() {
   try {
     await clientDB.init();
     clients = await clientDB.getAll();
+    loadSelection();
     if (clients.length > 0) {
       filteredClients = [...clients];
       updateStats();
       updateFilters();
       renderClients();
       renderMarkers();
+      updateSelectionBar();
       showToast(`${clients.length} clientes carregados`, 'info');
     }
+    initField();
   } catch (err) {
     console.error('DB error:', err);
   }
@@ -284,6 +355,7 @@ function setupEventListeners() {
   });
   document.getElementById('restore-input').addEventListener('change', handleRestoreFile);
   document.getElementById('route-day-btn').addEventListener('click', buildDayRoute);
+  document.getElementById('selection-clear').addEventListener('click', clearSelection);
   document.getElementById('report-btn').addEventListener('click', showReport);
   
   // Search with debounce
@@ -486,11 +558,7 @@ function renderMarkers() {
   filteredClients.forEach((client) => {
     if (client.lat && client.lng) {
       const marker = L.marker([client.lat, client.lng], {
-        icon: L.divIcon({
-          className: 'client-marker' + (client.visitStatus ? ' status-' + client.visitStatus : ''),
-          iconSize: [12, 12],
-          iconAnchor: [6, 6]
-        })
+        icon: markerIconFor(client)
       });
 
       const realIndex = clients.indexOf(client);
@@ -527,6 +595,7 @@ function renderClients() {
     const realIndex = clients.indexOf(client);
     return `
       <div class="client-card" data-index="${realIndex}" data-state="${client.state}" onclick="focusClient(${realIndex})">
+        <input type="checkbox" class="client-select" ${selectedIds.has(client.id) ? 'checked' : ''} onclick="event.stopPropagation();toggleSelect(${client.id})" title="Incluir no roteiro">
         <div class="client-card-avatar" style="--h: ${avatarHue(client.name)}">${escapeHtml(avatarInitial(client.name))}</div>
         <div class="client-card-body">
           <div class="client-card-name">${escapeHtml(client.name)}</div>
@@ -1363,9 +1432,12 @@ function orderNearestNeighbor(start, stops) {
 }
 
 async function buildDayRoute() {
-  const candidates = filteredClients.filter(c => c.lat && c.lng);
+  const useSelection = selectedIds.size > 0;
+  const candidates = (useSelection
+    ? clients.filter(c => selectedIds.has(c.id) && c.lat && c.lng)
+    : filteredClients.filter(c => c.lat && c.lng));
   if (candidates.length === 0) {
-    showToast('Nenhum cliente filtrado com coordenadas', 'error');
+    showToast(useSelection ? 'Nenhum selecionado com coordenadas' : 'Nenhum cliente filtrado com coordenadas', 'error');
     return;
   }
 
@@ -1373,6 +1445,8 @@ async function buildDayRoute() {
   const stops = candidates.slice(0, MAX_STOPS);
   if (candidates.length > MAX_STOPS) {
     showToast(`Roteiro limitado a ${MAX_STOPS} paradas (use filtros)`, 'info');
+  } else if (useSelection) {
+    showToast(`Roteiro com ${stops.length} selecionado(s)`, 'info');
   }
 
   try {

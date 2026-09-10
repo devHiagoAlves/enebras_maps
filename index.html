@@ -2,8 +2,12 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Mapa interativo do Brasil para visualização de clientes com importação de planilhas CSV/Excel.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Enebras Mapa">
 <meta name="keywords" content="mapa, brasil, clientes, planilha, csv, excel, geocodificação">
 <meta name="author" content="Enebras">
 <meta name="theme-color" content="#0a0f1a">
@@ -14,8 +18,9 @@
 <meta property="og:image" content="favicon.svg">
 
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="favicon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
 
 <title>Enebras - Mapa de Clientes</title>
 
@@ -49,7 +54,16 @@
 
 <!-- Main App -->
 <div id="app">
-  
+
+  <!-- Mobile topbar -->
+  <header id="mobile-topbar">
+    <span class="topbar-brand">ENEBRAS</span>
+    <nav class="view-switch">
+      <button id="view-visits-btn" class="active">📋 Visitas</button>
+      <button id="view-map-btn">🗺️ Mapa</button>
+    </nav>
+  </header>
+
   <!-- Sidebar -->
   <aside id="sidebar" class="sidebar">
     
@@ -235,6 +249,10 @@
     </div>
 
     <!-- Clients List -->
+    <div id="selection-bar" class="selection-bar hidden">
+      <span id="selection-count"></span>
+      <button id="selection-clear" title="Limpar seleção">Limpar</button>
+    </div>
     <div id="clients-list" class="clients-list"></div>
 
   </aside>
@@ -271,8 +289,73 @@
         </svg>
       </button>
     </div>
+    <button id="gps-btn" class="gps-fab" title="Minha localização" aria-label="Minha localização">◎</button>
+    <div id="sheet" class="sheet">
+      <div id="sheet-handle" class="sheet-handle"><span class="grab"></span><span id="sheet-count">Hoje</span></div>
+      <div id="sheet-list" class="sheet-list"></div>
+    </div>
   </main>
 
+</div>
+
+<!-- Visits View (modo campo) -->
+<section id="visits-view">
+  <div class="field-search-wrap">
+    <input type="search" id="field-search" class="search-input" placeholder="🔍 Buscar visita de hoje...">
+  </div>
+  <div id="field-today-count" class="field-today-count">Hoje</div>
+  <div id="field-list" class="field-list"></div>
+</section>
+
+<!-- Visit Modal (modo campo) -->
+<div id="visit-modal" class="modal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-container visit-sheet">
+    <div class="modal-header">
+      <div>
+        <h2 id="visit-name"></h2>
+        <div id="visit-address" class="visit-address"></div>
+        <div id="visit-times" class="visit-times"></div>
+      </div>
+      <button class="modal-close" id="visit-close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="visit-actions">
+        <a id="visit-call" class="modal-btn route" href="#">📞 Ligar</a>
+        <a id="visit-nav" class="modal-btn save" href="#" target="_blank" rel="noopener">🧭 Navegar</a>
+      </div>
+      <div class="visit-actions">
+        <button id="visit-checkin" class="modal-btn save">✓ Check-in</button>
+        <button id="visit-checkout" class="modal-btn edit">Check-out</button>
+      </div>
+      <div class="form-group">
+        <label for="visit-status">Resultado</label>
+        <select id="visit-status" class="form-input">
+          <option value="done">Concluída</option>
+          <option value="pending">Pendente</option>
+          <option value="return">Retorno necessário</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="visit-note">Observação</label>
+        <textarea id="visit-note" class="form-input" rows="3" placeholder="Ex.: 2 splits revisados, filtro trocado..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Fotos</label>
+        <label for="visit-photo" class="modal-btn edit photo-btn">📷 Adicionar foto</label>
+        <input type="file" id="visit-photo" accept="image/*" capture="environment" multiple style="display:none;">
+        <div id="visit-photos" class="photos-row"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="visit-save" class="modal-btn save">Salvar visita</button>
+    </div>
+  </div>
 </div>
 
 <!-- Client Modal -->
@@ -508,6 +591,7 @@
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" integrity="sha384-mFKkGiGvT5vo1fEyGCD3hshDdKmW3wzXW/x+fWriYJArD0R3gawT6lMvLboM22c0" crossorigin="anonymous"></script>
 <script src="db.js"></script>
 <script src="routes.js"></script>
+<script src="field.js"></script>
 <script src="app.js"></script>
 
 <script>

@@ -44,6 +44,16 @@ MIT
 
 ## Changelog
 
+### v7.0 — Modo Campo 📋
+- Tela "Visitas" mobile-first: lista do dia (da seleção do roteiro), busca e badges de check-in
+- Check-in/out com GPS + hora, resultado (concluída/pendente/retorno), observação e fotos comprimidas
+- Ligar (tap-to-call) e Navegar (Google Maps) direto da visita; última visita atualizada no PC
+- Botão GPS flutuante (seguir posição), bottom sheet no mapa, pins maiores no touch
+- PWA instalável: ícones PNG 192/512, standalone, safe-area; SW v5 com teto de 400 tiles
+
+### v6.2
+- Roteiro com clientes escolhidos a dedo (checkbox no card + destaque no mapa, salva a seleção)
+
 ### v6.1
 - Sidebar 340px + overlay automático até 1100px
 - Modo compacto p/ telas baixas (1366x768): painel rola, busca fixa no topo

@@ -1,8 +1,9 @@
-// Enebras Mapa de Clientes - Service Worker v4
-// App shell em cache (funciona offline) + runtime cache p/ tiles.
+// Enebras Mapa de Clientes - Service Worker v5
+// App shell em cache (funciona offline) + runtime cache p/ tiles (com teto).
 // API (Nominatim/OSRM) sempre vai à rede — nunca cacheia.
 
-const CACHE_NAME = 'enebras-mapa-v4';
+const CACHE_NAME = 'enebras-mapa-v5';
+const MAX_TILES = 400;
 
 const APP_SHELL = [
   './',
@@ -10,9 +11,12 @@ const APP_SHELL = [
   './style.css',
   './db.js',
   './routes.js',
+  './field.js',
   './app.js',
   './manifest.json',
   './favicon.svg',
+  './icon-192.png',
+  './icon-512.png',
   './brasil-estados.geojson',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
@@ -54,6 +58,18 @@ function isCacheableTile(url) {
     || url.hostname.includes('fonts.gstatic.com');
 }
 
+// Teto do cache de tiles: remove os mais antigos (Cache API não tem LRU nativo)
+async function trimTileCache(cache) {
+  try {
+    const keys = await cache.keys();
+    const tiles = keys.filter(r => r.url.includes('tile.openstreetmap.org'));
+    const over = tiles.length - MAX_TILES;
+    if (over > 0) {
+      await Promise.all(tiles.slice(0, over).map(r => cache.delete(r)));
+    }
+  } catch (e) {}
+}
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
@@ -74,7 +90,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Tiles / CDN / fontes: cache primeiro, completa com rede
+  // Tiles / CDN / fontes: cache primeiro, completa com rede (teto p/ não estourar cota)
   if (isCacheableTile(url)) {
     event.respondWith(
       caches.match(req).then((cached) => {
@@ -82,7 +98,9 @@ self.addEventListener('fetch', (event) => {
         return fetch(req).then((res) => {
           if (res && res.ok) {
             const copy = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(req, copy).then(() => trimTileCache(cache)).catch(() => {});
+            });
           }
           return res;
         });

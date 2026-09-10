@@ -1,6 +1,7 @@
 const DB_NAME = 'EnebrasMapDB';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const STORE_NAME = 'clients';
+const VISIT_STORE = 'visits';
 
 class ClientDB {
   constructor() {
@@ -25,6 +26,11 @@ class ClientDB {
           if (!store.indexNames.contains('email')) {
             store.createIndex('email', 'email', { unique: false });
           }
+        }
+        if (!db.objectStoreNames.contains(VISIT_STORE)) {
+          const visits = db.createObjectStore(VISIT_STORE, { keyPath: 'id', autoIncrement: true });
+          visits.createIndex('clientId', 'clientId', { unique: false });
+          visits.createIndex('date', 'date', { unique: false });
         }
       };
     });
@@ -246,6 +252,49 @@ class ClientDB {
 
       tx.oncomplete = () => resolve(deleted);
       tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  // === Visitas de campo ===
+  // { clientId, date, checkinAt, checkoutAt, lat, lng, note, status, photos[] }
+  _visitTx(mode) {
+    return this.db.transaction(VISIT_STORE, mode).objectStore(VISIT_STORE);
+  }
+
+  async addVisit(visit) {
+    return new Promise((resolve, reject) => {
+      const request = this._visitTx('readwrite').add(visit);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async updateVisit(visit) {
+    return new Promise((resolve, reject) => {
+      const request = this._visitTx('readwrite').put(visit);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async getVisitsByDate(date) {
+    return new Promise((resolve, reject) => {
+      const request = this._visitTx('readonly').index('date').getAll(date);
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async getVisit(clientId, date) {
+    const visits = await this.getVisitsByDate(date);
+    return visits.find(v => v.clientId === clientId) || null;
+  }
+
+  async getVisitsByClient(clientId) {
+    return new Promise((resolve, reject) => {
+      const request = this._visitTx('readonly').index('clientId').getAll(clientId);
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
     });
   }
 
