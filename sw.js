@@ -1,18 +1,20 @@
-// Enebras Mapa de Clientes - Service Worker v5
+// Enebras Mapa de Clientes - Service Worker v6
 // App shell em cache (funciona offline) + runtime cache p/ tiles (com teto).
 // API (Nominatim/OSRM) sempre vai à rede — nunca cacheia.
+// v7.1 usa cache-busting (?v=) p/ forçar atualização no celular.
 
-const CACHE_NAME = 'enebras-mapa-v5';
+const CACHE_NAME = 'enebras-mapa-v6';
 const MAX_TILES = 400;
+const ASSET_V = '?v=7.1';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './style.css',
-  './db.js',
-  './routes.js',
-  './field.js',
-  './app.js',
+  './style.css' + ASSET_V,
+  './db.js' + ASSET_V,
+  './routes.js' + ASSET_V,
+  './field.js' + ASSET_V,
+  './app.js' + ASSET_V,
   './manifest.json',
   './favicon.svg',
   './icon-192.png',
