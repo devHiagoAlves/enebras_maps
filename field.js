@@ -284,6 +284,8 @@ function toggleGps() {
     showToast('GPS indisponível', 'error');
     return;
   }
+  document.getElementById('gps-btn').classList.add('active');
+  showToast('Buscando GPS...', 'info');
   watchId = navigator.geolocation.watchPosition((p) => {
     const ll = [p.coords.latitude, p.coords.longitude];
     if (!meMarker && map) {
@@ -294,9 +296,10 @@ function toggleGps() {
       meMarker.setLatLng(ll);
     }
     if (map) map.setView(ll, Math.max(map.getZoom(), 15));
-    document.getElementById('gps-btn').classList.add('active');
   }, () => {
     showToast('GPS indisponível', 'error');
+    document.getElementById('gps-btn').classList.remove('active');
+    watchId = null;
   }, { enableHighAccuracy: true });
 }
 
