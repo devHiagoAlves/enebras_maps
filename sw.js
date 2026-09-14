@@ -3,9 +3,9 @@
 // API (Nominatim/OSRM) sempre vai à rede — nunca cacheia.
 // v7.1 usa cache-busting (?v=) p/ forçar atualização no celular.
 
-const CACHE_NAME = 'enebras-mapa-v17';
+const CACHE_NAME = 'enebras-mapa-v18';
 const MAX_TILES = 400;
-const ASSET_V = '?v=8.7';
+const ASSET_V = '?v=8.8';
 
 const APP_SHELL = [
   './',
@@ -19,6 +19,7 @@ const APP_SHELL = [
   './supabase-sync.js' + ASSET_V,
   './auth.js' + ASSET_V,
   './os.js' + ASSET_V,
+  './profile.js' + ASSET_V,
   './backend-config.js' + ASSET_V,
   './manifest.json',
   './favicon.svg',

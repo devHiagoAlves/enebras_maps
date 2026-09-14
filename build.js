@@ -43,7 +43,7 @@ function stripComments(code) {
     .trim() + '\n';
 }
 
-const jsFiles = ['db.js', 'field.js', 'app.js', 'share-route.js', 'supabase-sync.js', 'backend-config.js', 'auth.js', 'os.js'];
+const jsFiles = ['db.js', 'field.js', 'app.js', 'share-route.js', 'supabase-sync.js', 'backend-config.js', 'auth.js', 'os.js', 'profile.js'];
 jsFiles.forEach(file => {
   const src = path.join(__dirname, file);
   const dest = path.join(distDir, file);
@@ -62,7 +62,7 @@ jsFiles.forEach(file => {
 try {
   const backendDir = path.join(distDir, 'backend');
   if (!fs.existsSync(backendDir)) fs.mkdirSync(backendDir, { recursive: true });
-  ['supabase-schema.sql', 'supabase-auth.sql', 'supabase-os.sql'].forEach((f) => {
+  ['supabase-schema.sql', 'supabase-auth.sql', 'supabase-os.sql', 'supabase-profile.sql'].forEach((f) => {
     const src = path.join(__dirname, 'backend', f);
     if (fs.existsSync(src)) { fs.copyFileSync(src, path.join(backendDir, f)); console.log('Copied: backend/' + f); }
   });

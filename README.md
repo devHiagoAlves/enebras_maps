@@ -52,6 +52,11 @@ MIT
 - CARTO passou a exigir API key nos basemaps; migramos p/ Esri Gray Canvas (sem chave)
 - Dark gray no tema escuro, light gray no claro; atribuição Esri/OSM
 
+### v8.8 — Perfil + gestão de usuários 👤
+- Página de perfil (clica no chip): foto com upload, nome, trocar senha
+- Adm: lista usuários, edita papel/equipe, desativa/reativa e cria novos sem banco
+- Login barra usuário desativado; avatar aparece no chip
+
 ### v8.1 — Fase A: OS com ciclo de vida 📋
 - Tabela `tasks` (código OS-... único, tipo, status, prioridade, técnico, data)
 - Painel de OSs: filtros (Abertas/Hoje/Minhas/Finalizadas), Nova OS com geocodificação

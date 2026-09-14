@@ -2277,3 +2277,9 @@ body.is-tec #sidebar{display:none!important}
 .auth-who{flex:1;min-width:0}
 .auth-who b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .auth-who span{font-size:11px;color:#9fb3cc}
+
+/* === Perfil v8.8 === */
+.pf-center{display:flex;justify-content:center;margin:4px 0 10px}
+.pf-photo{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid #38bdf8}
+.pf-noavatar{width:96px;height:96px;border-radius:50%;background:#2563eb;color:#fff;font-size:40px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.photo-btn{display:block;text-align:center;margin-bottom:10px;cursor:pointer}

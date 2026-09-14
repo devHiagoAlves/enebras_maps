@@ -87,6 +87,10 @@
     if (!res.ok) throw new Error('Erro ao ler perfil (' + res.status + ')');
     var rows = await res.json();
     profile = rows && rows[0] ? rows[0] : null;
+    if (profile && profile.active === false) {
+      session = null; profile = null; saveSession();
+      throw new Error('Usuário desativado. Fale com o adm.');
+    }
     return profile;
   }
 
