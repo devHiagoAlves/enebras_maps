@@ -41,3 +41,7 @@ create policy "mvp insert routes" on routes for insert with check (true);
 create policy "mvp read checkins" on checkins for select using (true);
 create policy "mvp insert checkins" on checkins for insert with check (true);
 create policy "mvp update checkins" on checkins for update using (true) with check (true);
+
+-- Acesso da Data API (anon/authenticated) + RLS já protege as linhas
+grant select, insert, update on routes to anon, authenticated;
+grant select, insert, update on checkins to anon, authenticated;

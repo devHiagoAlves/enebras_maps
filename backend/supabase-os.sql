@@ -40,3 +40,6 @@ drop policy if exists "teste: atualizar tasks" on tasks;
 create policy "teste: ler tasks" on tasks for select to authenticated using (true);
 create policy "teste: inserir tasks" on tasks for insert to authenticated with check (true);
 create policy "teste: atualizar tasks" on tasks for update to authenticated using (true) with check (true);
+
+-- Acesso da Data API (anon/authenticated) + RLS já protege as linhas
+grant select, insert, update on tasks to anon, authenticated;

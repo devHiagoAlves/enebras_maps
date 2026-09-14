@@ -48,3 +48,6 @@ create policy "teste: atualizar perfis" on profiles for update to authenticated 
 -- 5. Promover o adm de teste (RODAR DEPOIS de criar os usuários no Dashboard)
 -- update profiles set role = 'admin', nome = 'Hiago (Adm)' where email = 'admin@enebras.teste';
 -- update profiles set nome = 'Tecnico 01' where email = 'tec1@enebras.teste';
+
+-- Acesso da Data API (anon/authenticated) + RLS já protege as linhas
+grant select, insert, update on profiles to anon, authenticated;
