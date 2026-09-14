@@ -3,9 +3,9 @@
 // API (Nominatim/OSRM) sempre vai à rede — nunca cacheia.
 // v7.1 usa cache-busting (?v=) p/ forçar atualização no celular.
 
-const CACHE_NAME = 'enebras-mapa-v13';
+const CACHE_NAME = 'enebras-mapa-v14';
 const MAX_TILES = 400;
-const ASSET_V = '?v=8.3';
+const ASSET_V = '?v=8.4';
 
 const APP_SHELL = [
   './',
@@ -60,6 +60,7 @@ function isApiRequest(url) {
 function isCacheableTile(url) {
   return url.hostname.includes('tile.openstreetmap.org')
     || url.hostname.includes('basemaps.cartocdn.com')
+    || url.hostname.includes('server.arcgisonline.com')
     || url.hostname.includes('unpkg.com')
     || url.hostname.includes('cdn.jsdelivr.net')
     || url.hostname.includes('fonts.googleapis.com')
@@ -70,7 +71,7 @@ function isCacheableTile(url) {
 async function trimTileCache(cache) {
   try {
     const keys = await cache.keys();
-    const tiles = keys.filter(r => r.url.includes('tile.openstreetmap.org') || r.url.includes('basemaps.cartocdn.com'));
+    const tiles = keys.filter(r => r.url.includes('tile.openstreetmap.org') || r.url.includes('basemaps.cartocdn.com') || r.url.includes('server.arcgisonline.com'));
     const over = tiles.length - MAX_TILES;
     if (over > 0) {
       await Promise.all(tiles.slice(0, over).map(r => cache.delete(r)));

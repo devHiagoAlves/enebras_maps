@@ -44,6 +44,10 @@ MIT
 
 ## Changelog
 
+### v8.4 — Tiles via Esri (fim do "API KEY REQUIRED") 🗺️
+- CARTO passou a exigir API key nos basemaps; migramos p/ Esri Gray Canvas (sem chave)
+- Dark gray no tema escuro, light gray no claro; atribuição Esri/OSM
+
 ### v8.1 — Fase A: OS com ciclo de vida 📋
 - Tabela `tasks` (código OS-... único, tipo, status, prioridade, técnico, data)
 - Painel de OSs: filtros (Abertas/Hoje/Minhas/Finalizadas), Nova OS com geocodificação

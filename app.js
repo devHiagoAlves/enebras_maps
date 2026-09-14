@@ -5,13 +5,14 @@
 let map;
 let baseLayer = null;
 
-// Provedor de tiles permitido p/ apps (OSM direto dá 403 em apps).
+// Provedor de tiles sem chave (OSM direto dá 403 em apps; CARTO passou a exigir API key).
+// Esri Gray Canvas combina com os temas escuro/claro.
 function baseTileUrl() {
   var light = false;
   try { light = document.body.classList.contains('light'); } catch (e) {}
   return light
-    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    ? 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+    : 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
 }
 let statesLayer;
 let markerCluster = null;
@@ -187,7 +188,8 @@ function initMap() {
     // Tiles via CARTO (OSM bloqueia apps direto no tile.openstreetmap.org — 403).
     // dark_all combina com o tema escuro; light_all com o tema claro.
     baseLayer = L.tileLayer(baseTileUrl(), {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: undefined,
+      attribution: 'Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       subdomains: 'abcd',
       maxZoom: 20
     }).addTo(map);
