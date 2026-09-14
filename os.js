@@ -73,13 +73,30 @@
     try { return await res.json(); } catch (e) { return null; }
   }
 
-  function makeCode() {
+  function randomCode() {
     var d = new Date();
     var stamp = String(d.getFullYear()).slice(2) +
       String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
     var chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', r = '';
     for (var i = 0; i < 3; i++) r += chars[Math.floor(Math.random() * chars.length)];
     return 'OS-' + stamp + '-' + r;
+  }
+
+  // Numeração oficial sequencial por ano: OS-2026-0001...
+  async function nextCode() {
+    var year = new Date().getFullYear();
+    try {
+      var rows = await rest('GET', 'tasks', undefined,
+        '?code=like.OS-' + year + '-*&select=code&order=code.desc&limit=1');
+      var max = 0;
+      (rows || []).forEach(function (r) {
+        var m = /-(\d+)$/.exec(r.code || '');
+        if (m) max = Math.max(max, parseInt(m[1], 10));
+      });
+      return 'OS-' + year + '-' + String(max + 1).padStart(4, '0');
+    } catch (e) {
+      return randomCode();
+    }
   }
 
   // --- CRUD ---
@@ -281,7 +298,7 @@
   }
 
   // --- Nova OS (adm) ---
-  async function newOsModal() {
+  async function newOsModal(prefill) {
     var tecs = [];
     try {
       if (window.TeamAuth) {
@@ -297,7 +314,7 @@
     ov.innerHTML =
       '<div class="auth-card" style="max-width:420px">' +
       '<h2>Nova OS</h2>' +
-      '<div class="form-group"><label>Título</label><input id="nos-title" class="form-input" placeholder="Ex.: Preventiva chiller — HEVA"></div>' +
+      '<div class="form-group"><label>Resumo</label><input id="nos-title" class="form-input" placeholder="Ex.: Preventiva chiller — HEVA"></div>' +
       '<div class="form-group"><label>Cliente / local</label><input id="nos-client" class="form-input" placeholder="Ex.: HEVA"></div>' +
       '<div class="form-group"><label>Endereço</label><input id="nos-addr" class="form-input" placeholder="Rua, número"></div>' +
       '<div class="os-2col">' +
@@ -316,12 +333,18 @@
       '</select></div>' +
       '<div class="form-group"><label>Data</label><input id="nos-date" class="form-input" type="date" value="' + todayISO() + '"></div>' +
       '</div>' +
-      '<div class="form-group"><label>Observação</label><textarea id="nos-notes" class="form-input" rows="2"></textarea></div>' +
+      '<div class="form-group"><label>Descrição</label><textarea id="nos-notes" class="form-input" rows="3" placeholder="Descreva o serviço..."></textarea></div>' +
       '<div class="auth-row"><button id="nos-ok" class="modal-btn save">Criar OS</button>' +
       '<button id="nos-cancel" class="modal-btn cancel">Cancelar</button></div>' +
       '</div>';
     document.body.appendChild(ov);
     var $ = function (id) { return ov.querySelector('#' + id); };
+    if (prefill) {
+      if (prefill.client) $('nos-client').value = prefill.client;
+      if (prefill.address) $('nos-addr').value = prefill.address;
+      if (prefill.city) $('nos-city').value = prefill.city;
+      if (prefill.state) $('nos-uf').value = prefill.state;
+    }
     $('nos-cancel').addEventListener('click', function () { ov.remove(); });
     $('nos-ok').addEventListener('click', async function () {
       var client = $('nos-client').value.trim();
@@ -337,8 +360,10 @@
         if (typeof geocodeClients === 'function' && probe.city && probe.state) {
           try { await geocodeClients([probe]); } catch (e) {}
         }
+        var code = await nextCode();
         var created = await createTask({
-          code: makeCode(), title: title, type: $('nos-type').value,
+          code: code,
+          title: title, type: $('nos-type').value,
           status: $('nos-tec').value ? 'agendada' : 'aberta',
           priority: $('nos-prio').value, client_name: client,
           address: probe.address || null, city: probe.city || null, state: probe.state || null,
@@ -486,6 +511,10 @@
 
   window.OSFlow = {
     openOsPanel: openOsPanel,
+    newOsModal: function (prefill) {
+      if (!backendOn()) { toast('OSs precisam do backend configurado', 'error'); return; }
+      newOsModal(prefill);
+    },
     onRouteShared: onRouteShared,
     listTasks: listTasks,
     updateTask: updateTask

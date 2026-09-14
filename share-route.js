@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════════
-// Enebras Mapa — Compartilhar rota p/ técnico (ponte Auvo) v7.2
+// Enebras Mapa — Compartilhar rota p/ técnico (link do app)
 // Sem backend: a rota viaja dentro do próprio link (#rota=...).
-// Fluxo: Hiago calcula o roteiro > clica "Enviar p/ técnico (Auvo)"
-// > cola o texto na tarefa do Auvo > técnico abre o link no celular
+// Fluxo: Hiago calcula o roteiro > clica "Enviar p/ técnico"
+// > envia o texto ao técnico > técnico abre o link no celular
 // e cai direto nas visitas do dia, mesmo sem ter nada cadastrado.
 // ═══════════════════════════════════════════════════════════════
 (function () {
@@ -97,7 +97,7 @@
     return 'https://www.google.com/maps/dir/?api=1&destination=' + q;
   }
 
-  function buildAuvoText(payload, shareUrl) {
+  function buildShareText(payload, shareUrl) {
     var lines = [];
     lines.push('ROTA DO DIA — ' + (payload.tech || 'Técnico') + ' (' + payload.date + ') — Enebras');
     payload.stops.forEach(function (s, i) {
@@ -158,10 +158,10 @@
 
     var payload = buildPayload(tech, stops);
     var url = buildShareUrl(payload);
-    var text = buildAuvoText(payload, url);
+    var text = buildShareText(payload, url);
     copyFallback(text, function (ok) {
-      toast(ok ? 'Texto copiado! Cole na tarefa do Auvo. 📋' : 'Erro ao copiar — copie manualmente', ok ? 'success' : 'error');
-      if (!ok) prompt('Copie o texto para o Auvo:', text);
+      toast(ok ? 'Texto copiado! Envie ao técnico. 📋' : 'Erro ao copiar — copie manualmente', ok ? 'success' : 'error');
+      if (!ok) prompt('Copie o texto da rota:', text);
     });
   }
 
@@ -247,7 +247,7 @@
     }
   }
 
-  // --- Retorno do técnico (cola de volta no Auvo/WhatsApp) ---
+  // --- Retorno do técnico (cola de volta como retorno) ---
   function copyReturn() {
     var list = [];
     try {
@@ -269,7 +269,7 @@
     });
     lines.push('Total: ' + done + '/' + list.length + ' concluídas');
     copyFallback(lines.join('\n'), function (ok) {
-      toast(ok ? 'Retorno copiado! Cole no Auvo/WhatsApp. 📋' : 'Erro ao copiar', ok ? 'success' : 'error');
+      toast(ok ? 'Retorno copiado! Compartilhe com o técnico. 📋' : 'Erro ao copiar', ok ? 'success' : 'error');
     });
   }
 
@@ -281,14 +281,14 @@
     btn.id = 'field-return-btn';
     btn.className = 'modal-btn edit';
     btn.style.cssText = 'margin:8px 0;width:100%';
-    btn.textContent = '📋 Copiar retorno (Auvo/WhatsApp)';
+    btn.textContent = '📋 Copiar retorno';
     btn.addEventListener('click', copyReturn);
     anchor.parentNode.insertBefore(btn, anchor.nextSibling);
   }
 
   // --- Boot ---
   document.addEventListener('DOMContentLoaded', function () {
-    var shareBtn = document.getElementById('route-share-auvo');
+    var shareBtn = document.getElementById('route-share');
     if (shareBtn) shareBtn.addEventListener('click', shareRoute);
     ensureReturnButton();
     var payload = parseHash();

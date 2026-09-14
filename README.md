@@ -57,6 +57,12 @@ MIT
 - Adm: lista usuários, edita papel/equipe, desativa/reativa e cria novos sem banco
 - Login barra usuário desativado; avatar aparece no chip
 
+### v9.0 — Projeto próprio: fora ponte Auvo, OS nativa 📋
+- Removida toda a ponte de copiar-para-Auvo; botões e textos neutros
+- Botão do cliente virou "Criar OS" (abre a OS pré-preenchida)
+- Numeração oficial sequencial por ano (OS-2026-0001...)
+- Campos Resumo + Descrição no formulário
+
 ### v8.10 — Correções do QA 🔍
 - Técnico com topbar e visitas em qualquer tela (antes só no celular)
 - Chip de usuário só aparece logado; tag compacta no mobile

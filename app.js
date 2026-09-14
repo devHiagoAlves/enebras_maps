@@ -419,7 +419,7 @@ function setupEventListeners() {
     if (idx >= 0) openEditModal(idx);
   });
   document.getElementById('modal-delete').addEventListener('click', () => deleteClient(currentClientId));
-  document.getElementById('modal-copy-os').addEventListener('click', copyServiceOrder);
+  document.getElementById('modal-copy-os').addEventListener('click', openOsForClient);
   
   // Modal - Edit
   document.getElementById('edit-modal-close').addEventListener('click', closeEditModal);
@@ -1561,26 +1561,19 @@ function printDayRoute() {
     ['#', 'Cliente', 'Endereço', 'Dist.', 'Tempo'], rows);
 }
 
-// === Copiar OS (ponte p/ o Auvo) ===
-async function copyServiceOrder() {
+// === Criar OS nativa a partir do cliente ===
+function openOsForClient() {
   const client = getClientById(currentClientId);
   if (!client) return;
-
-  const mapsLink = (client.lat && client.lng)
-    ? `https://www.google.com/maps/dir/?api=1&destination=${client.lat},${client.lng}`
-    : '';
-  const lines = [
-    'ORDEM DE SERVIÇO — Enebras',
-    `Cliente: ${client.name || ''}`,
-    `Endereço: ${client.address || ''} — ${client.city || ''}/${client.state || ''} — CEP ${client.cep || ''}`,
-    `Contato: ${client.phone || ''}${client.email ? ' / ' + client.email : ''}`,
-    `Status: ${(client.visitStatus && VISIT_STATUS[client.visitStatus]) || 'Não definido'}`,
-    `Última visita: ${client.lastVisit ? fmtDate(client.lastVisit) : 'Não registrada'}`
-  ];
-  if (mapsLink) lines.push(`Mapa: ${mapsLink}`);
-
-  const ok = await copyText(lines.join('\n'));
-  showToast(ok ? 'OS copiada! Cole no Auvo.' : 'Erro ao copiar', ok ? 'success' : 'error');
+  if (window.OSFlow && OSFlow.newOsModal) {
+    closeViewModal();
+    OSFlow.newOsModal({
+      client: client.name || '', address: client.address || '',
+      city: client.city || '', state: client.state || ''
+    });
+  } else {
+    showToast('OSs precisam do backend configurado', 'error');
+  }
 }
 
 // === Init ===

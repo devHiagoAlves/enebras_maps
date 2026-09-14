@@ -336,8 +336,8 @@
         } catch (e) {}
         ensureLiveLine();
         refreshLive();
-        toast(ok ? 'Rota ' + res.code + ' no ar! Texto copiado p/ o Auvo. 📋' : 'Rota ' + res.code + ' criada, mas copie manualmente', ok ? 'success' : 'error');
-        if (!ok) prompt('Copie o texto para o Auvo:', text);
+        toast(ok ? 'Rota ' + res.code + ' no ar! Texto copiado. 📋' : 'Rota ' + res.code + ' criada, mas copie manualmente', ok ? 'success' : 'error');
+        if (!ok) prompt('Copie o texto da rota:', text);
       } catch (e) {
         toast('Nuvem falhou (' + e.message + ') — usando modo offline', 'error');
         offline();
