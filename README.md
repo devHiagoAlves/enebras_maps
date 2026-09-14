@@ -57,6 +57,10 @@ MIT
 - Adm: lista usuários, edita papel/equipe, desativa/reativa e cria novos sem banco
 - Login barra usuário desativado; avatar aparece no chip
 
+### v9.2 — Auditoria de camadas 🧹
+- Removido debug de produção; controles do mapa acima dos marcadores
+- Auditados 119 fios getElementById: todos resolvem
+
 ### v9.1 — Modal Nova OS visível 🪟
 - Modal abria atrás do painel (z 70 < 2500); subido para 2600 (vale p/ escolher técnico também)
 
