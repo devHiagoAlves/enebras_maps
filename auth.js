@@ -260,11 +260,23 @@
     var div = document.createElement('div');
     div.id = 'auth-side';
     div.className = 'auth-side';
+    div.setAttribute('role', 'button');
+    div.setAttribute('tabindex', '0');
+    div.setAttribute('title', 'Abrir meu perfil');
     div.innerHTML = '<div class="auth-avatar" id="auth-avatar">?</div>' +
       '<div class="auth-who"><b id="auth-side-name">...</b><span id="auth-side-role"></span></div>' +
+      '<span class="auth-chev">›</span>' +
       '<button id="auth-side-logout" class="auth-logout" title="Sair">Sair</button>';
     sidebar.insertBefore(div, sidebar.firstChild);
     div.querySelector('#auth-side-logout').addEventListener('click', logout);
+    div.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openProfileFallback(); }
+    });
+    function openProfileFallback() {
+      try {
+        if (window.ProfilePage && ProfilePage.openProfile) ProfilePage.openProfile();
+      } catch (e) {}
+    }
   }
 
   function ensureUserTag() {

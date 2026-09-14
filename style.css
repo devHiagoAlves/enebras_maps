@@ -2273,6 +2273,10 @@ body.is-tec #sidebar{display:none!important}
 
 /* === Chip de usuário (v8.7) === */
 .auth-side{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #1c2942}
+.auth-side[role="button"]{cursor:pointer;border-radius:10px;transition:background .15s}
+.auth-side[role="button"]:hover{background:#16213a}
+.auth-side[role="button"]:focus-visible{outline:2px solid #38bdf8;outline-offset:-2px}
+.auth-chev{color:#5b6b85;font-size:20px;line-height:1}
 .auth-avatar{width:34px;height:34px;border-radius:50%;background:#2563eb;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .auth-who{flex:1;min-width:0}
 .auth-who b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
