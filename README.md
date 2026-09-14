@@ -57,6 +57,10 @@ MIT
 - Adm: lista usuários, edita papel/equipe, desativa/reativa e cria novos sem banco
 - Login barra usuário desativado; avatar aparece no chip
 
+### v9.3 — Técnico vê suas OSs 🔧
+- Botão OSs na topbar do técnico (abre painel filtrado em "Minhas")
+- OS atribuída aparece para o técnico abrir e executar
+
 ### v9.2 — Auditoria de camadas 🧹
 - Removido debug de produção; controles do mapa acima dos marcadores
 - Auditados 119 fios getElementById: todos resolvem

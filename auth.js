@@ -239,6 +239,7 @@
       document.body.classList.toggle('is-admin', profile.role === 'admin');
       if (tag) tag.textContent = (profile.nome || profile.email) + ' • ' + (profile.role === 'admin' ? 'Adm' : 'Técnico');
       if (profile.role === 'tecnico') {
+        ensureTecOsBtn();
         ensureMyRoutes();
         loadMyRoutes();
         var tries = 0;
@@ -277,6 +278,24 @@
         if (window.ProfilePage && ProfilePage.openProfile) ProfilePage.openProfile();
       } catch (e) {}
     }
+  }
+
+  function ensureTecOsBtn() {
+    try {
+      if (!isTec()) return;
+      if (document.getElementById('view-os-btn')) return;
+      var nav = document.querySelector('#mobile-topbar .view-switch');
+      if (!nav) return;
+      var btn = document.createElement('button');
+      btn.id = 'view-os-btn';
+      btn.textContent = '🔧 OSs';
+      btn.addEventListener('click', function () {
+        try {
+          if (window.OSFlow && OSFlow.openOsPanel) OSFlow.openOsPanel();
+        } catch (e) {}
+      });
+      nav.appendChild(btn);
+    } catch (e) {}
   }
 
   function ensureUserTag() {
