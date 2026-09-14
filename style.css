@@ -2232,3 +2232,41 @@ body.light .map-btn.active {
     background: var(--bg-secondary);
   }
 }
+
+/* === Auth v8.0 (login + perfis) === */
+.auth-overlay{position:fixed;inset:0;background:rgba(5,10,20,.92);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.auth-card{background:#101a2e;border:1px solid #26314d;border-radius:14px;padding:24px;width:100%;max-width:360px;color:#e8eef7}
+.auth-card h2{margin:0 0 14px;font-size:20px}
+.auth-logo{font-weight:800;letter-spacing:2px;color:#38bdf8;margin-bottom:6px}
+.auth-err{color:#f87171;min-height:20px;font-size:13px;margin:6px 0}
+.auth-go{width:100%;margin-top:6px}
+.auth-row{display:flex;gap:8px;margin-top:10px}
+.auth-row .modal-btn{flex:1}
+.auth-user-tag{font-size:12px;color:#9fb3cc;margin-left:10px}
+.auth-logout{background:transparent;border:1px solid #33415e;color:#cbd5e1;border-radius:8px;padding:4px 10px;margin-left:8px;font-size:12px}
+#my-routes{padding:10px 12px 0}
+.my-routes-title{font-weight:700;margin-bottom:6px}
+.my-routes-list{display:flex;flex-direction:column;gap:8px;padding-bottom:8px}
+.my-route-card{background:#101a2e;border:1px solid #26314d;border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px}
+body.is-tec #sidebar{display:none!important}
+
+/* === OS Fase A v8.1 === */
+.os-overlay{position:fixed;inset:0;background:rgba(5,10,20,.9);z-index:55;display:flex;justify-content:center;padding:14px;overflow-y:auto}
+.os-sheet{background:#0d1526;border:1px solid #26314d;border-radius:14px;width:100%;max-width:560px;height:fit-content;max-height:92vh;display:flex;flex-direction:column;color:#e8eef7}
+.os-head{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 16px 8px}
+.os-head h2{margin:0;font-size:18px}
+.os-tools{display:flex;gap:8px;padding:8px 16px;flex-wrap:wrap}
+.os-tools .filter-select{flex:1;min-width:130px}
+.os-list{padding:8px 16px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.os-card{background:#101a2e;border:1px solid #26314d;border-left:4px solid #38bdf8;border-radius:10px;padding:10px;font-size:13px}
+.os-card.st-finalizada{opacity:.75;border-left-color:#22c55e}
+.os-card.st-cancelada{opacity:.6;border-left-color:#64748b}
+.os-card.st-em_execucao,.os-card.st-no_local{border-left-color:#f59e0b}
+.os-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.os-pill{background:#1e293b;border:1px solid #33415e;border-radius:20px;padding:2px 10px;font-size:11px}
+.os-title{font-weight:700;margin-bottom:2px}
+.os-meta{color:#9fb3cc;font-size:12px}
+.os-actions{display:flex;gap:8px;margin-top:8px}
+.os-actions .modal-btn{padding:6px 12px;font-size:12px}
+.os-2col{display:flex;gap:8px}
+.os-2col .form-group{flex:1}

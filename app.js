@@ -3,6 +3,16 @@
 // ═══════════════════════════════════════════════════════════════
 
 let map;
+let baseLayer = null;
+
+// Provedor de tiles permitido p/ apps (OSM direto dá 403 em apps).
+function baseTileUrl() {
+  var light = false;
+  try { light = document.body.classList.contains('light'); } catch (e) {}
+  return light
+    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+}
 let statesLayer;
 let markerCluster = null;
 let plainLayer = null;
@@ -174,9 +184,12 @@ function initMap() {
     // Zoom no canto inferior-direito: nunca colide com sidebar/logo
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap',
-      maxZoom: 18
+    // Tiles via CARTO (OSM bloqueia apps direto no tile.openstreetmap.org — 403).
+    // dark_all combina com o tema escuro; light_all com o tema claro.
+    baseLayer = L.tileLayer(baseTileUrl(), {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 20
     }).addTo(map);
 
     // Init marker cluster + camada individual (toggle sem esvaziar o mapa)
@@ -1274,6 +1287,7 @@ function toggleTheme() {
   const isLight = !document.body.classList.contains('light');
   localStorage.setItem('enebras-theme', isLight ? 'light' : 'dark');
   applyTheme();
+  try { if (baseLayer) baseLayer.setUrl(baseTileUrl()); } catch (e) {}
 }
 
 // === Backup / Restore ===

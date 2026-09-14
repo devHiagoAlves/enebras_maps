@@ -2,3 +2,4 @@ dist/
 scoped_dir*/
 chromium_*/
 *.tmp
+backend-config.js

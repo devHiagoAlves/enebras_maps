@@ -3,9 +3,9 @@
 // API (Nominatim/OSRM) sempre vai à rede — nunca cacheia.
 // v7.1 usa cache-busting (?v=) p/ forçar atualização no celular.
 
-const CACHE_NAME = 'enebras-mapa-v6';
+const CACHE_NAME = 'enebras-mapa-v11';
 const MAX_TILES = 400;
-const ASSET_V = '?v=7.1';
+const ASSET_V = '?v=8.1';
 
 const APP_SHELL = [
   './',
@@ -15,6 +15,11 @@ const APP_SHELL = [
   './routes.js' + ASSET_V,
   './field.js' + ASSET_V,
   './app.js' + ASSET_V,
+  './share-route.js' + ASSET_V,
+  './supabase-sync.js' + ASSET_V,
+  './auth.js' + ASSET_V,
+  './os.js' + ASSET_V,
+  './backend-config.js' + ASSET_V,
   './manifest.json',
   './favicon.svg',
   './icon-192.png',
@@ -54,6 +59,7 @@ function isApiRequest(url) {
 
 function isCacheableTile(url) {
   return url.hostname.includes('tile.openstreetmap.org')
+    || url.hostname.includes('basemaps.cartocdn.com')
     || url.hostname.includes('unpkg.com')
     || url.hostname.includes('cdn.jsdelivr.net')
     || url.hostname.includes('fonts.googleapis.com')
@@ -64,7 +70,7 @@ function isCacheableTile(url) {
 async function trimTileCache(cache) {
   try {
     const keys = await cache.keys();
-    const tiles = keys.filter(r => r.url.includes('tile.openstreetmap.org'));
+    const tiles = keys.filter(r => r.url.includes('tile.openstreetmap.org') || r.url.includes('basemaps.cartocdn.com'));
     const over = tiles.length - MAX_TILES;
     if (over > 0) {
       await Promise.all(tiles.slice(0, over).map(r => cache.delete(r)));

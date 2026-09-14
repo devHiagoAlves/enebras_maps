@@ -44,6 +44,38 @@ MIT
 
 ## Changelog
 
+### v8.1 — Fase A: OS com ciclo de vida 📋
+- Tabela `tasks` (código OS-... único, tipo, status, prioridade, técnico, data)
+- Painel de OSs: filtros (Abertas/Hoje/Minhas/Finalizadas), Nova OS com geocodificação
+- "Roteiro das OSs": a agenda do dia nasce das OSs e a rota carrega os IDs (`task_ids`)
+- Check-in → `no_local`, salvar → `em_execução`, check-out → `finalizada`, tudo sozinho
+
+### v8.0 — Login + perfis (estilo Auvo) 👥
+- Tela de login (e-mail + senha, Supabase Auth, logins de teste)
+- Perfil **adm**: app completo + envia rota escolhendo o técnico na lista
+- Perfil **técnico**: vê SÓ "Minhas rotas" + visitas (sidebar oculta)
+- Rotas ligadas ao e-mail do técnico (`tech_email`); check-in segue ao vivo
+- Sem backend configurado = tudo como antes (offline, sem login)
+
+### v7.4 — Tiles via CARTO (fim do 403) 🗺️
+- OSM bloqueia apps direto no tile.openstreetmap.org; migramos p/ CARTO (permitido p/ apps, grátis)
+- dark_all no tema escuro, light_all no tema claro (troca junto no toggle)
+- Atribuição correta OSM + CARTO; service worker cacheia o novo host
+
+### v7.3 — Backend grátis (Supabase) + ao vivo 🔴
+- `backend/supabase-schema.sql`: tabelas routes + checkins (plano free, sem cartão)
+- `supabase-sync.js`: compartilhar gera link curto (?r=CODIGO); check-in do técnico grava na nuvem
+- Linha "AO VIVO" no painel da rota com botão de atualizar p/ o Hiago acompanhar
+- Sem credencial em `backend-config.js` = cai sozinho p/ modo offline (#rota=)
+
+### v7.2 — Rota por técnico (ponte Auvo) 📤
+- Botão "Enviar p/ técnico (Auvo)" no painel do roteiro: gera texto + link com os dados da rota dentro (#rota=...)
+- Técnico abre o link no celular e cai direto nas visitas do dia, mesmo sem base local
+- Botão "Copiar retorno" no Modo Campo: resumo p/ colar de volta no Auvo/WhatsApp
+- Sem backend: check-ins ficam no celular até o retorno ser colado
+
+
+
 ### v7.0 — Modo Campo 📋
 - Tela "Visitas" mobile-first: lista do dia (da seleção do roteiro), busca e badges de check-in
 - Check-in/out com GPS + hora, resultado (concluída/pendente/retorno), observação e fotos comprimidas

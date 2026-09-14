@@ -16,7 +16,8 @@ const filesToCopy = [
   'sw.js',
   'routes.js',
   'exemplo-clientes.csv',
-  'brasil-estados.geojson'
+  'brasil-estados.geojson',
+  'backend-config.example.js'
 ];
 
 filesToCopy.forEach(file => {
@@ -42,7 +43,7 @@ function stripComments(code) {
     .trim() + '\n';
 }
 
-const jsFiles = ['db.js', 'field.js', 'app.js'];
+const jsFiles = ['db.js', 'field.js', 'app.js', 'share-route.js', 'supabase-sync.js', 'backend-config.js', 'auth.js', 'os.js'];
 jsFiles.forEach(file => {
   const src = path.join(__dirname, file);
   const dest = path.join(distDir, file);
@@ -56,6 +57,16 @@ jsFiles.forEach(file => {
     console.log(`Stripped: ${file} (${savings}% smaller)`);
   }
 });
+
+// SQL do backend vai junto p/ referência do deploy
+try {
+  const backendDir = path.join(distDir, 'backend');
+  if (!fs.existsSync(backendDir)) fs.mkdirSync(backendDir, { recursive: true });
+  ['supabase-schema.sql', 'supabase-auth.sql', 'supabase-os.sql'].forEach((f) => {
+    const src = path.join(__dirname, 'backend', f);
+    if (fs.existsSync(src)) { fs.copyFileSync(src, path.join(backendDir, f)); console.log('Copied: backend/' + f); }
+  });
+} catch (e) { console.log('Backend copy skipped: ' + e.message); }
 
 const cssFiles = ['style.css'];
 cssFiles.forEach(file => {
