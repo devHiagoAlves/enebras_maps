@@ -329,6 +329,7 @@
       if (!client) { toast('Informe o cliente', 'error'); return; }
       $('nos-ok').textContent = 'Criando...';
       try {
+        if (typeof showLoading === 'function') showLoading('Criando OS...');
         var probe = {
           address: $('nos-addr').value.trim(), city: $('nos-city').value.trim(),
           state: $('nos-uf').value.trim().toUpperCase()
@@ -353,6 +354,8 @@
       } catch (e) {
         $('nos-ok').textContent = 'Criar OS';
         toast('Erro: ' + e.message, 'error');
+      } finally {
+        try { if (typeof hideLoading === 'function') hideLoading(); } catch (e) {}
       }
     });
   }

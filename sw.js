@@ -3,9 +3,9 @@
 // API (Nominatim/OSRM) sempre vai à rede — nunca cacheia.
 // v7.1 usa cache-busting (?v=) p/ forçar atualização no celular.
 
-const CACHE_NAME = 'enebras-mapa-v19';
+const CACHE_NAME = 'enebras-mapa-v20';
 const MAX_TILES = 400;
-const ASSET_V = '?v=8.9';
+const ASSET_V = '?v=8.10';
 
 const APP_SHELL = [
   './',

@@ -57,6 +57,11 @@ MIT
 - Adm: lista usuários, edita papel/equipe, desativa/reativa e cria novos sem banco
 - Login barra usuário desativado; avatar aparece no chip
 
+### v8.10 — Correções do QA 🔍
+- Técnico com topbar e visitas em qualquer tela (antes só no celular)
+- Chip de usuário só aparece logado; tag compacta no mobile
+- Loading não trava mais após criar OS
+
 ### v8.1 — Fase A: OS com ciclo de vida 📋
 - Tabela `tasks` (código OS-... único, tipo, status, prioridade, técnico, data)
 - Painel de OSs: filtros (Abertas/Hoje/Minhas/Finalizadas), Nova OS com geocodificação
