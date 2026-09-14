@@ -310,22 +310,37 @@
     });
   }
 
+  function bootDebug(msg) {
+    try {
+      var el = document.getElementById('boot-debug');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'boot-debug';
+        el.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99;background:#000;color:#0f0;font:11px monospace;padding:4px 8px;border-radius:6px;opacity:.9';
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+    } catch (e) {}
+  }
+
   // --- Boot ---
   document.addEventListener('DOMContentLoaded', function () {
     if (!backendOn()) return; // sem backend: segue offline, sem login
     loadSession();
-    // Guarda anti-pisca: sem sessão e sem tela de login = reabre sozinho
+    bootDebug('boot cfg=' + (backendOn() ? 1 : 0) + ' sess=' + (session ? 1 : 0) + ' v8.3');
     setInterval(function () {
       try {
         if (!session && !document.getElementById('auth-view')) showLogin();
       } catch (e) {}
     }, 2000);
     ensureUserTag();
-    if (!session) { showLogin(); return; }
+    if (!session) { bootDebug('sem sessao -> login v8.3'); showLogin(); return; }
+    bootDebug('com sessao -> perfil...');
     loadProfile().then(function (p) {
-      if (!p) { showLogin(); return; }
+      if (!p) { bootDebug('perfil invalido -> login'); showLogin(); return; }
+      bootDebug('logado: ' + p.role);
       applyRole();
-    }).catch(function () { showLogin(); });
+    }).catch(function () { bootDebug('erro perfil -> login'); showLogin(); });
   });
 
   window.TeamAuth = {
