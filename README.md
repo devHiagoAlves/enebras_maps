@@ -57,6 +57,9 @@ MIT
 - Adm: lista usuários, edita papel/equipe, desativa/reativa e cria novos sem banco
 - Login barra usuário desativado; avatar aparece no chip
 
+### v9.1 — Modal Nova OS visível 🪟
+- Modal abria atrás do painel (z 70 < 2500); subido para 2600 (vale p/ escolher técnico também)
+
 ### v9.0 — Projeto próprio: fora ponte Auvo, OS nativa 📋
 - Removida toda a ponte de copiar-para-Auvo; botões e textos neutros
 - Botão do cliente virou "Criar OS" (abre a OS pré-preenchida)

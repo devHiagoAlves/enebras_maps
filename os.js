@@ -310,7 +310,7 @@
     } catch (e) {}
     var ov = document.createElement('div');
     ov.className = 'auth-overlay';
-    ov.style.zIndex = 70;
+    ov.style.zIndex = 2600; // acima do painel de OSs (2500)
     ov.innerHTML =
       '<div class="auth-card" style="max-width:420px">' +
       '<h2>Nova OS</h2>' +

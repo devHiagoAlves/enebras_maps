@@ -115,7 +115,7 @@
       return new Promise(function (resolve) {
         var ov = document.createElement('div');
         ov.className = 'auth-overlay';
-        ov.style.zIndex = 60;
+        ov.style.zIndex = 2600; // acima dos painéis (2500)
         ov.innerHTML =
           '<div class="auth-card">' +
           '<h2>Enviar rota para</h2>' +
