@@ -277,6 +277,7 @@
       '<div id="auth-err" class="auth-err"></div>' +
       '<button id="auth-go" class="modal-btn save auth-go">Entrar</button>' +
       '<div class="photos-hint">Teste: admin@enebras.teste · tec1@enebras.teste</div>' +
+      '<div class="photos-hint">v8.2</div>' +
       '</div>';
     document.body.appendChild(ov);
     var go = function () {
@@ -313,6 +314,12 @@
   document.addEventListener('DOMContentLoaded', function () {
     if (!backendOn()) return; // sem backend: segue offline, sem login
     loadSession();
+    // Guarda anti-pisca: sem sessão e sem tela de login = reabre sozinho
+    setInterval(function () {
+      try {
+        if (!session && !document.getElementById('auth-view')) showLogin();
+      } catch (e) {}
+    }, 2000);
     ensureUserTag();
     if (!session) { showLogin(); return; }
     loadProfile().then(function (p) {
