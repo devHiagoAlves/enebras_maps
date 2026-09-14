@@ -276,8 +276,6 @@
       '<input id="auth-senha" class="form-input" type="password" placeholder="••••••••" autocomplete="current-password"></div>' +
       '<div id="auth-err" class="auth-err"></div>' +
       '<button id="auth-go" class="modal-btn save auth-go">Entrar</button>' +
-      '<div class="photos-hint">Teste: admin@enebras.teste · tec1@enebras.teste</div>' +
-      '<div class="photos-hint">v8.2</div>' +
       '</div>';
     document.body.appendChild(ov);
     var go = function () {
