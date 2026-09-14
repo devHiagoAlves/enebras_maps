@@ -2291,6 +2291,7 @@ body.is-tec #sidebar{display:none!important}
 /* === QA v8.10: técnico com navegação em qualquer tela + chip só logado === */
 #auth-side{display:none}
 body.is-admin #auth-side,body.is-tec #auth-side{display:flex}
+body.is-tec #app{flex-direction:column;height:100vh}
 body.is-tec #mobile-topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;flex-shrink:0;z-index:1600;background:var(--bg-primary,#0a0f1a)}
 body.is-tec #visits-view{display:none}
 body.is-tec #visits-view.active{display:flex;flex-direction:column;position:fixed;inset:0;z-index:1500;background:var(--bg-primary,#0a0f1a);padding:64px 14px 14px;overflow-y:auto}
