@@ -44,6 +44,10 @@ MIT
 
 ## Changelog
 
+### v8.5 — Login visível (z-index acima do mapa) 🪟
+- Overlays de login e OSs estavam atrás dos painéis do Leaflet (invisíveis)
+- z-index 2500: acima do mapa e modais, abaixo do loading/toasts
+
 ### v8.4 — Tiles via Esri (fim do "API KEY REQUIRED") 🗺️
 - CARTO passou a exigir API key nos basemaps; migramos p/ Esri Gray Canvas (sem chave)
 - Dark gray no tema escuro, light gray no claro; atribuição Esri/OSM

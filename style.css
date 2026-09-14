@@ -2234,7 +2234,7 @@ body.light .map-btn.active {
 }
 
 /* === Auth v8.0 (login + perfis) === */
-.auth-overlay{position:fixed;inset:0;background:rgba(5,10,20,.92);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.auth-overlay{position:fixed;inset:0;background:rgba(5,10,20,.92);display:flex;align-items:center;justify-content:center;z-index:2500;padding:16px}
 .auth-card{background:#101a2e;border:1px solid #26314d;border-radius:14px;padding:24px;width:100%;max-width:360px;color:#e8eef7}
 .auth-card h2{margin:0 0 14px;font-size:20px}
 .auth-logo{font-weight:800;letter-spacing:2px;color:#38bdf8;margin-bottom:6px}
@@ -2251,7 +2251,7 @@ body.light .map-btn.active {
 body.is-tec #sidebar{display:none!important}
 
 /* === OS Fase A v8.1 === */
-.os-overlay{position:fixed;inset:0;background:rgba(5,10,20,.9);z-index:55;display:flex;justify-content:center;padding:14px;overflow-y:auto}
+.os-overlay{position:fixed;inset:0;background:rgba(5,10,20,.9);z-index:2500;display:flex;justify-content:center;padding:14px;overflow-y:auto}
 .os-sheet{background:#0d1526;border:1px solid #26314d;border-radius:14px;width:100%;max-width:560px;height:fit-content;max-height:92vh;display:flex;flex-direction:column;color:#e8eef7}
 .os-head{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 16px 8px}
 .os-head h2{margin:0;font-size:18px}
