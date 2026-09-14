@@ -224,6 +224,12 @@
   // --- Papel na tela ---
   function applyRole() {
     var tag = document.getElementById('auth-user-tag');
+    var nm = document.getElementById('auth-side-name');
+    var rl = document.getElementById('auth-side-role');
+    var av = document.getElementById('auth-avatar');
+    if (nm) nm.textContent = profile ? (profile.nome || profile.email) : '...';
+    if (rl) rl.textContent = profile ? (profile.role === 'admin' ? 'Administrador' : 'Técnico') : '';
+    if (av) av.textContent = profile ? (profile.nome || profile.email || '?').trim().charAt(0).toUpperCase() : '?';
     if (profile) {
       document.body.classList.toggle('is-tec', profile.role === 'tecnico');
       document.body.classList.toggle('is-admin', profile.role === 'admin');
@@ -243,7 +249,22 @@
     }
   }
 
+  function ensureSideChip() {
+    if (document.getElementById('auth-side')) return;
+    var sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    var div = document.createElement('div');
+    div.id = 'auth-side';
+    div.className = 'auth-side';
+    div.innerHTML = '<div class="auth-avatar" id="auth-avatar">?</div>' +
+      '<div class="auth-who"><b id="auth-side-name">...</b><span id="auth-side-role"></span></div>' +
+      '<button id="auth-side-logout" class="auth-logout" title="Sair">Sair</button>';
+    sidebar.insertBefore(div, sidebar.firstChild);
+    div.querySelector('#auth-side-logout').addEventListener('click', logout);
+  }
+
   function ensureUserTag() {
+    ensureSideChip();
     if (document.getElementById('auth-user-tag')) return;
     var bar = document.querySelector('#mobile-topbar .view-switch');
     var span = document.createElement('span');

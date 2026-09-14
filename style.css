@@ -2270,3 +2270,10 @@ body.is-tec #sidebar{display:none!important}
 .os-actions .modal-btn{padding:6px 12px;font-size:12px}
 .os-2col{display:flex;gap:8px}
 .os-2col .form-group{flex:1}
+
+/* === Chip de usuário (v8.7) === */
+.auth-side{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #1c2942}
+.auth-avatar{width:34px;height:34px;border-radius:50%;background:#2563eb;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.auth-who{flex:1;min-width:0}
+.auth-who b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.auth-who span{font-size:11px;color:#9fb3cc}
