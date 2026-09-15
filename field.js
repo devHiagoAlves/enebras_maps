@@ -74,6 +74,8 @@ function renderFieldList() {
     const el = document.getElementById(id);
     if (el) el.textContent = list.length === 0 ? 'Hoje' : `${done}/${list.length} hoje`;
   });
+  var rb = document.getElementById('field-return-btn');
+  if (rb) rb.style.display = list.length === 0 ? 'none' : '';
 }
 
 function setFieldView(view) {

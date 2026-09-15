@@ -273,8 +273,16 @@
     });
   }
 
+  function updateReturnButton() {
+    var btn = document.getElementById('field-return-btn');
+    if (!btn) return;
+    var n = 0;
+    try { n = (typeof getTodayList === 'function') ? getTodayList().length : 0; } catch (e) {}
+    btn.style.display = n === 0 ? 'none' : '';
+  }
+
   function ensureReturnButton() {
-    if (document.getElementById('field-return-btn')) return;
+    if (document.getElementById('field-return-btn')) { updateReturnButton(); return; }
     var anchor = document.getElementById('field-today-count');
     if (!anchor) return;
     var btn = document.createElement('button');
@@ -284,6 +292,7 @@
     btn.textContent = '📋 Copiar retorno';
     btn.addEventListener('click', copyReturn);
     anchor.parentNode.insertBefore(btn, anchor.nextSibling);
+    updateReturnButton();
   }
 
   // --- Boot ---
@@ -295,5 +304,5 @@
     if (payload) applySharedRoute(payload);
   });
 
-  window.RouteShare = { shareRoute: shareRoute, copyReturn: copyReturn, parseHash: parseHash };
+  window.RouteShare = { shareRoute: shareRoute, copyReturn: copyReturn, parseHash: parseHash, updateReturnButton: updateReturnButton };
 })();

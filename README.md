@@ -44,6 +44,10 @@ MIT
 
 ## Changelog
 
+### v9.4 — Botão retorno some com lista vazia 🧹
+- Issue #5 do QA: "Copiar retorno" aparecia solto na tela vazia
+- Agora esconde quando `Hoje` está vazio e reaparece com visitas (field.js + share-route.js)
+
 ### v8.5 — Login visível (z-index acima do mapa) 🪟
 - Overlays de login e OSs estavam atrás dos painéis do Leaflet (invisíveis)
 - z-index 2500: acima do mapa e modais, abaixo do loading/toasts
