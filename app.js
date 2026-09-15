@@ -89,12 +89,68 @@ function updateSelectionBar() {
   const label = document.getElementById('selection-count');
   if (label) label.textContent = n === 1 ? '1 selecionado' : `${n} selecionados`;
 }
+
+function nearDistTxt(client) {
+  if (!nearActive) return '';
+  const d = nearDist.get(client.id);
+  if (d == null) return '';
+  return d < 1 ? ` • ${Math.round(d * 1000)} m` : ` • ${d.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} km`;
+}
+
+function sortByNear(list) {
+  return [...list].sort((a, b) => (nearDist.get(a.id) ?? 1e9) - (nearDist.get(b.id) ?? 1e9));
+}
+
+function toggleNear() {
+  if (nearActive) {
+    nearActive = false;
+    nearDist = new Map();
+    document.getElementById('near-btn').classList.remove('active');
+    filterClients();
+    showToast('Ordem normal restaurada', 'info');
+    return;
+  }
+  if (!('geolocation' in navigator)) {
+    showToast('GPS não suportado neste aparelho', 'error');
+    return;
+  }
+  showLoading('Localizando...');
+  navigator.geolocation.getCurrentPosition((pos) => {
+    try {
+      const me = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      nearDist = new Map();
+      clients.forEach(c => {
+        if (c.lat && c.lng) nearDist.set(c.id, haversineKm(me, { lat: Number(c.lat), lng: Number(c.lng) }));
+      });
+      if (nearDist.size === 0) {
+        showToast('Nenhum cliente com coordenadas', 'error');
+        return;
+      }
+      nearActive = true;
+      document.getElementById('near-btn').classList.add('active');
+      filteredClients = sortByNear(filteredClients);
+      renderClients();
+      renderMarkers();
+      const top = filteredClients[0];
+      showToast(`Mais próximo: ${top.name}${nearDistTxt(top)}`, 'success');
+    } finally {
+      hideLoading();
+    }
+  }, (err) => {
+    hideLoading();
+    showToast('GPS: ' + geoErrorMessage(err), 'error');
+  }, { timeout: 12000, maximumAge: 60000 });
+}
 let clients = [];
 let filteredClients = [];
 let stateClientCounts = {};
 let isOnline = navigator.onLine;
 let currentClientId = null;
 let showClusters = true;
+
+// === Clientes próximos (ordena por distância do GPS, sem salvar nada) ===
+let nearActive = false;
+let nearDist = new Map();
 
 // === Debounce ===
 function debounce(func, wait) {
@@ -370,6 +426,7 @@ function setupEventListeners() {
   });
   document.getElementById('restore-input').addEventListener('change', handleRestoreFile);
   document.getElementById('route-day-btn').addEventListener('click', buildDayRoute);
+  document.getElementById('near-btn').addEventListener('click', toggleNear);
   document.getElementById('selection-clear').addEventListener('click', clearSelection);
   document.getElementById('report-btn').addEventListener('click', showReport);
   
@@ -393,6 +450,7 @@ function setupEventListeners() {
   document.getElementById('city-filter').addEventListener('change', filterClients);
   document.getElementById('status-filter').addEventListener('change', filterClients);
   document.getElementById('visit-filter').addEventListener('change', filterClients);
+  document.getElementById('pmoc-filter').addEventListener('change', filterClients);
   
   // Sidebar toggle
   document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
@@ -615,9 +673,10 @@ function renderClients() {
         <div class="client-card-body">
           <div class="client-card-name">${escapeHtml(client.name)}</div>
           <div class="client-card-address">${escapeHtml(client.address || '')}</div>
-          <div class="client-card-location">${escapeHtml(client.city)} - ${client.state}</div>
+          <div class="client-card-location">${escapeHtml(client.city)} - ${client.state}${escapeHtml(nearDistTxt(client))}</div>
           <div class="client-card-visit">${escapeHtml(visitLabel(client))}</div>
           ${client.visitStatus && VISIT_STATUS[client.visitStatus] ? `<span class="status-badge status-${client.visitStatus}">${VISIT_STATUS[client.visitStatus]}</span>` : ''}
+          ${pmocBadge(client)}
         </div>
       </div>
     `;
@@ -684,6 +743,7 @@ function filterClients() {
   const city = document.getElementById('city-filter').value;
   const status = document.getElementById('status-filter').value;
   const visit = document.getElementById('visit-filter').value;
+  const pmoc = document.getElementById('pmoc-filter').value;
 
   filteredClients = clients.filter(client => {
     const matchSearch = !search ||
@@ -703,8 +763,18 @@ function filterClients() {
       matchVisit = days !== null && days > parseInt(visit, 10);
     }
 
-    return matchSearch && matchState && matchCity && matchStatus && matchVisit;
+    let matchPmoc = true;
+    if (pmoc) {
+      const p = pmocInfo(client);
+      if (pmoc === 'bad') matchPmoc = p.state === 'bad';
+      else if (pmoc === 'warn') matchPmoc = p.state === 'warn';
+      else if (pmoc === 'none') matchPmoc = p.state === 'none';
+    }
+
+    return matchSearch && matchState && matchCity && matchStatus && matchVisit && matchPmoc;
   });
+
+  if (nearActive) filteredClients = sortByNear(filteredClients);
 
   renderClients();
   renderMarkers();
@@ -731,6 +801,7 @@ function openViewModal(index) {
     (client.visitStatus && VISIT_STATUS[client.visitStatus]) ? VISIT_STATUS[client.visitStatus] : 'Não definido';
   document.getElementById('modal-last-visit').textContent =
     client.lastVisit ? `${fmtDate(client.lastVisit)} (${visitLabel(client).toLowerCase()})` : 'Não registrada';
+  document.getElementById('modal-pmoc-due').textContent = pmocText(client);
 
   document.getElementById('client-modal').classList.add('visible');
 }
@@ -756,6 +827,7 @@ function openEditModal(index) {
   document.getElementById('edit-email').value = client.email || '';
   document.getElementById('edit-visit-status').value = client.visitStatus || '';
   document.getElementById('edit-last-visit').value = client.lastVisit || '';
+  document.getElementById('edit-pmoc-due').value = client.pmocDue || '';
 
   closeViewModal();
   document.getElementById('edit-modal').classList.add('visible');
@@ -790,6 +862,7 @@ async function saveClient() {
     email: document.getElementById('edit-email').value.trim(),
     visitStatus: document.getElementById('edit-visit-status').value,
     lastVisit: document.getElementById('edit-last-visit').value,
+    pmocDue: document.getElementById('edit-pmoc-due').value,
     uniqueKey: generateUniqueKey(
       name,
       document.getElementById('edit-city').value.trim(),
@@ -962,6 +1035,7 @@ function processImportedData(rows) {
   const emailIdx = findCol('email', 'e-mail', 'e_mail');
   const latIdx = findCol('lat', 'latitude');
   const lngIdx = findCol('lng', 'lon', 'longitude');
+  const pmocIdx = findCol('pmoc', 'validade');
 
   if (nameIdx === -1) {
     showToast('Coluna "nome" não encontrada. Colunas: ' + headers.join(', '), 'error');
@@ -987,6 +1061,7 @@ function processImportedData(rows) {
       cep: cepIdx >= 0 ? String(row[cepIdx] || '').trim() : '',
       phone: phoneIdx >= 0 ? String(row[phoneIdx] || '').trim() : '',
       email: emailIdx >= 0 ? String(row[emailIdx] || '').trim() : '',
+      pmocDue: pmocIdx >= 0 ? normPmocDate(row[pmocIdx]) : '',
       lat: latIdx >= 0 ? parseFloat(row[latIdx]) : null,
       lng: lngIdx >= 0 ? parseFloat(row[lngIdx]) : null,
       uniqueKey: generateUniqueKey(name, city, state, address),
@@ -1035,6 +1110,15 @@ function processImportedData(rows) {
   } else {
     finishImport();
   }
+}
+
+// Normaliza data de PMOC da planilha p/ ISO (aceita dd/mm/aaaa ou aaaa-mm-dd)
+function normPmocDate(v) {
+  const s = String(v || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(s);
+  if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+  return '';
 }
 
 // === Generate Unique Key ===
@@ -1234,6 +1318,37 @@ function visitLabel(client) {
   return `Visitado há ${days} dias`;
 }
 
+// === PMOC com validade ===
+// client.pmocDue: 'YYYY-MM-DD' ou vazio. Sem migração de banco (campo simples).
+function pmocInfo(client) {
+  if (!client || !client.pmocDue) return { state: 'none', days: null };
+  const d = new Date(client.pmocDue + 'T12:00:00');
+  if (isNaN(d.getTime())) return { state: 'none', days: null };
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  const days = Math.floor((d - today) / 86400000);
+  if (days < 0) return { state: 'bad', days };
+  if (days <= 30) return { state: 'warn', days };
+  return { state: 'ok', days };
+}
+
+function pmocText(client) {
+  const p = pmocInfo(client);
+  if (p.state === 'none') return 'Sem data';
+  const base = fmtDate(client.pmocDue);
+  if (p.state === 'bad') return `${base} (vencido há ${Math.abs(p.days)}d)`;
+  if (p.state === 'warn') return p.days === 0 ? `${base} (vence hoje!)` : `${base} (vence em ${p.days}d)`;
+  return `${base} (em dia)`;
+}
+
+// Badge só p/ alerta (vencido / vencendo) — PMOC em dia aparece só no modal
+function pmocBadge(client) {
+  const p = pmocInfo(client);
+  if (p.state !== 'bad' && p.state !== 'warn') return '';
+  const txt = p.state === 'bad' ? `PMOC vencido há ${Math.abs(p.days)}d` : (p.days === 0 ? 'PMOC vence hoje' : `PMOC vence em ${p.days}d`);
+  return `<span class="pmoc-badge pmoc-${p.state}">${escapeHtml(txt)}</span>`;
+}
+
 function haversineKm(a, b) {
   const R = 6371;
   const dLat = (b.lat - a.lat) * Math.PI / 180;
@@ -1357,6 +1472,8 @@ function reportData() {
   const byCity = {};
   let withCoords = 0;
   let withVisit = 0;
+  let pmocBad = 0;
+  let pmocWarn = 0;
   const byStatus = { active: 0, pmoc: 0, pending: 0, none: 0 };
   clients.forEach(c => {
     const st = c.state || '?';
@@ -1367,8 +1484,11 @@ function reportData() {
     if (c.lastVisit) withVisit++;
     if (c.visitStatus && byStatus[c.visitStatus] !== undefined) byStatus[c.visitStatus]++;
     else byStatus.none++;
+    const p = pmocInfo(c);
+    if (p.state === 'bad') pmocBad++;
+    else if (p.state === 'warn') pmocWarn++;
   });
-  return { byState, byCity, withCoords, withVisit, byStatus };
+  return { byState, byCity, withCoords, withVisit, byStatus, pmocBad, pmocWarn };
 }
 
 function showReport() {
@@ -1393,6 +1513,8 @@ function showReport() {
         <tr><td>PMOC vigente</td><td class="num">${d.byStatus.pmoc}</td></tr>
         <tr><td>Pendente</td><td class="num">${d.byStatus.pending}</td></tr>
         <tr><td>Sem status</td><td class="num">${d.byStatus.none}</td></tr>
+        <tr><td>PMOC vencido ⚠️</td><td class="num">${d.pmocBad}</td></tr>
+        <tr><td>PMOC vence em 30d</td><td class="num">${d.pmocWarn}</td></tr>
       </tbody></table>
     </div>
     <div class="report-section"><h3>Por estado</h3>

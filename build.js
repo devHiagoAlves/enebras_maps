@@ -43,7 +43,7 @@ function stripComments(code) {
     .trim() + '\n';
 }
 
-const jsFiles = ['db.js', 'field.js', 'app.js', 'share-route.js', 'supabase-sync.js', 'backend-config.js', 'auth.js', 'os.js', 'profile.js'];
+const jsFiles = ['db.js', 'field.js', 'app.js', 'share-route.js', 'supabase-sync.js', 'backend-config.js', 'auth.js', 'os.js', 'profile.js', 'turno.js'];
 jsFiles.forEach(file => {
   const src = path.join(__dirname, file);
   const dest = path.join(distDir, file);

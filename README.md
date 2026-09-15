@@ -44,6 +44,12 @@ MIT
 
 ## Changelog
 
+### v10.0 — Turno + Semana + PMOC + Próximos 📊
+- 📊 Dashboard do turno (botão Turno): OSs de hoje/abertas, visitas concluídas, técnicos em campo agora, PMOC atenção + copiar resumo
+- 🗓️ Relatório semanal (botão Semana): últimos 7 dias por cliente, copiar resumo p/ WhatsApp + imprimir
+- ⏰ PMOC com validade: campo data no cliente, badge de alerta no card, filtro PMOC, coluna no CSV e contagem no relatório
+- 📍 Próximos: ordena clientes por distância do GPS (liga/desliga, sem salvar nada)
+
 ### v9.4 — Botão retorno some com lista vazia 🧹
 - Issue #5 do QA: "Copiar retorno" aparecia solto na tela vazia
 - Agora esconde quando `Hoje` está vazio e reaparece com visitas (field.js + share-route.js)

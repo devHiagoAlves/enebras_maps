@@ -30,7 +30,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9.4">
+<link rel="stylesheet" href="style.css?v=10.0">
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js" integrity="sha384-7hwyYzxURfZMLwHgvEKrYEmM5tX+1DVWK5iDR4R69bOQeY90Q8B8n9Cobuyqybhw" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -209,6 +209,15 @@
         </svg>
         Relatório
       </button>
+      <button id="near-btn" class="action-btn secondary" title="Ordenar clientes por distância do GPS">
+        📍 Próximos
+      </button>
+      <button id="dash-btn" class="action-btn secondary" title="Visão do turno: OSs, visitas e PMOC de hoje">
+        📊 Turno
+      </button>
+      <button id="week-btn" class="action-btn secondary" title="Resumo dos últimos 7 dias para enviar">
+        🗓️ Semana
+      </button>
       <input type="file" id="restore-input" accept=".json,application/json" style="display:none;">
     </div>
 
@@ -249,6 +258,12 @@
         <option value="30">Há +30 dias</option>
         <option value="60">Há +60 dias</option>
         <option value="90">Há +90 dias</option>
+      </select>
+      <select id="pmoc-filter" class="filter-select" title="Filtrar por validade do PMOC">
+        <option value="">PMOC</option>
+        <option value="bad">PMOC vencido</option>
+        <option value="warn">Vence em 30 dias</option>
+        <option value="none">Sem data</option>
       </select>
     </div>
 
@@ -404,6 +419,10 @@
         <label>Última visita</label>
         <span id="modal-last-visit"></span>
       </div>
+      <div class="modal-field">
+        <label>PMOC validade</label>
+        <span id="modal-pmoc-due"></span>
+      </div>
     </div>
     <div class="modal-footer">
       <button id="modal-route" class="modal-btn route">
@@ -497,6 +516,10 @@
         <div class="form-group">
           <label for="edit-last-visit">Última visita</label>
           <input type="date" id="edit-last-visit" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="edit-pmoc-due">PMOC validade</label>
+          <input type="date" id="edit-pmoc-due" class="form-input">
         </div>
       </div>
     </div>
@@ -596,16 +619,17 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" integrity="sha384-mFKkGiGvT5vo1fEyGCD3hshDdKmW3wzXW/x+fWriYJArD0R3gawT6lMvLboM22c0" crossorigin="anonymous"></script>
-<script src="db.js?v=9.4"></script>
-<script src="routes.js?v=9.4"></script>
-<script src="field.js?v=9.4"></script>
-<script src="app.js?v=9.4"></script>
-<script src="backend-config.js?v=9.4"></script>
-<script src="share-route.js?v=9.4"></script>
-<script src="supabase-sync.js?v=9.4"></script>
-<script src="auth.js?v=9.4"></script>
-<script src="os.js?v=9.4"></script>
-<script src="profile.js?v=9.4"></script>
+<script src="db.js?v=10.0"></script>
+<script src="routes.js?v=10.0"></script>
+<script src="field.js?v=10.0"></script>
+<script src="app.js?v=10.0"></script>
+<script src="backend-config.js?v=10.0"></script>
+<script src="share-route.js?v=10.0"></script>
+<script src="supabase-sync.js?v=10.0"></script>
+<script src="auth.js?v=10.0"></script>
+<script src="os.js?v=10.0"></script>
+<script src="profile.js?v=10.0"></script>
+<script src="turno.js?v=10.0"></script>
 
 <script>
 if ('serviceWorker' in navigator) {

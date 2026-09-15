@@ -308,7 +308,7 @@ class ClientDB {
       return /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
     };
 
-    const headers = ['Nome', 'Endereço', 'Cidade', 'Estado', 'CEP', 'Telefone', 'Email', 'Status', 'Ultima Visita', 'Latitude', 'Longitude'];
+    const headers = ['Nome', 'Endereço', 'Cidade', 'Estado', 'CEP', 'Telefone', 'Email', 'Status', 'Ultima Visita', 'PMOC Validade', 'Latitude', 'Longitude'];
     const rows = clients.map(c => [
       `"${csvSafe(c.name)}"`,
       `"${csvSafe(c.address)}"`,
@@ -319,6 +319,7 @@ class ClientDB {
       `"${csvSafe(c.email)}"`,
       `"${csvSafe(c.visitStatus || '')}"`,
       `"${csvSafe(c.lastVisit || '')}"`,
+      `"${csvSafe(c.pmocDue || '')}"`,
       c.lat || '',
       c.lng || ''
     ]);
