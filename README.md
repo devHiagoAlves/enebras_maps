@@ -44,6 +44,11 @@ MIT
 
 ## Changelog
 
+### v10.1 — Sidebar compacta 📐
+- Ações secundárias (Relatório/Próximos/Turno/Semana) em grade 2 colunas — economiza ~100px verticais
+- Seções fixas travadas (`flex-shrink: 0`): só a lista de clientes comprime, nunca some
+- Lista com altura mínima garantida (90px) em qualquer altura de tela
+
 ### v10.0 — Turno + Semana + PMOC + Próximos 📊
 - 📊 Dashboard do turno (botão Turno): OSs de hoje/abertas, visitas concluídas, técnicos em campo agora, PMOC atenção + copiar resumo
 - 🗓️ Relatório semanal (botão Semana): últimos 7 dias por cliente, copiar resumo p/ WhatsApp + imprimir
